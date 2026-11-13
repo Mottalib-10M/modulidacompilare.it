@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Editorial policy – ${SITE_NAMES[lang]}`} description="Where the wording of the forms published here comes from, who answers for it, when it is reread against the statutes and what happens when someone reports an error to us." lang={lang} noindex={true} breadcrumbs={[{ label: 'Editorial policy' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Editorial and corrections policy</h1>
+    <p>Wrong wording gets a form rejected; a miscounted deadline loses a notice period. Here is where our texts come from and what we do when one is wrong.</p>
+    <h2>Responsibility</h2><p>{AUTHOR_NAME} answers for every sentence, deadline and calculation on the site. Text that does not match its source can be reported to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Primary sources only</h2>
+    <ul>
+      <li><strong>statutes and codes</strong> (DPR 445/2000, Civil Code, Law 431/1998, Decree-Law 7/2007, Consumer Code, Legislative Decree 151/2015), read on Normattiva;</li>
+      <li><strong>public ministry pages</strong>, such as the Ministry of Labour page on online resignation, for procedure.</li>
+    </ul>
+    <p>Templates from comuni or private sites are not copied. A rule we could not check against a published text is never presented as certain: we say so.</p>
+    <h2>Templates, not advice</h2><p>Every form is an indicative template. We say so under every title and in every PDF. For special situations, such as a complex estate or a contract with unusual clauses, we point to a professional.</p>
+    <h2>Checks before publication</h2><p>Tax code, dates, deadlines, reserved shares, composed texts and PDF output are covered by automated tests; an update that breaks them is blocked.</p>
+    <h2>Updates</h2><p>Updates are manual: whenever a statute used here changes, the article is reread, texts corrected, tests rerun and the site republished. The date of the last reread is shown on every page.</p>
+    <h2>Handling errors</h2>
+    <ol><li>Check against the statute.</li><li>Text or parameter corrected, a test added.</li><li>New date on the pages concerned.</li></ol>
+    <h2>Independence</h2><p>No commercial ties with law firms, notaries, CAF, patronati or paperwork agencies. No sponsored links in the texts. Any commercial relationship would be stated clearly.</p>
+    <p>See also the <a href={route('method', lang)}>method</a>. Version: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

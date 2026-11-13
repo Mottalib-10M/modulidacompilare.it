@@ -1,0 +1,85 @@
+---
+/** Metodo e fonti (page de confiance, RECETTE §8.2) : textes appliqués, choix de rédaction, contrôles, tests, limites, mises à jour. */
+import PageLayout from '../layouts/PageLayout.astro';
+import { route, type Locale } from '../i18n/routes';
+import { P } from '../lib/engine/params';
+import * as M from '../lib/engine/index';
+import { formatMoney, displayDate } from '../lib/format';
+import { breadcrumbSchema, webPageSchema, faqSchema } from '../lib/seo';
+import { CONTACT_EMAIL } from '../data/site-config';
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const it = lang === 'it';
+const tag = it ? 'it-IT' : 'en-GB';
+const d = (iso: string) => displayDate(iso, tag);
+const $ = (n: number) => formatMoney(n, 0, lang);
+const title = it ? 'Metodo: come scriviamo i moduli e calcoliamo i termini' : 'Method: how the forms are written and deadlines worked out';
+const description = it ? 'Da quali articoli vengono le formule dei moduli, come si controlla il codice fiscale, come si calcolano preavvisi e recessi, come nasce il PDF, test e limiti.' : 'Which articles the form wording comes from, how the tax code is checked, how notice and withdrawal periods are counted, how the PDF is made, tests and limits.';
+const h1 = it ? 'Metodo e fonti' : 'Method and sources';
+const path = route('method', lang);
+const sources = Object.values(P.sources);
+const es = M.quote(true, 2, false, 200000);
+const fineAffitto = M.aggiungiMesi('2026-11-13', P.preavviso_locatore_mesi);
+const revoca = M.aggiungiGiorni('2026-11-13', P.revoca_dimissioni_giorni);
+const faqs = it ? [
+  { q: 'Perché il testo del modulo è diverso da quello del mio comune?', a: 'Ogni comune scrive il proprio modello, con formule e impaginazione sue. La legge non impone un testo unico: conta che la dichiarazione contenga i dati richiesti, il richiamo alle sanzioni e la firma (art. 48 del DPR 445/2000). Il nostro testo segue l’articolo di legge parola per parola dove la legge detta una formula, e resta asciutto altrove.' },
+  { q: 'Come controllate che il codice fiscale sia giusto?', a: 'Il sito calcola il carattere di controllo, cioè la sedicesima lettera, con la tabella dei valori pari e dispari pubblicata con il decreto del 1976 che istituì il codice. Se la lettera non torna, il campo lo segnala. Il controllo non sa se il codice appartiene davvero a te: verifica solo che sia scritto in modo coerente.' },
+  { q: 'Il PDF passa da un vostro server?', a: 'No. Il file viene costruito dal codice della pagina nel tuo browser, con i caratteri standard dei lettori PDF, e scaricato direttamente sul dispositivo. Nessun dato viene inviato, nemmeno per statistiche: il sito non ha un database dei moduli compilati e non potrebbe recuperarli.' },
+] : [
+  { q: 'Why does the form wording differ from my comune’s template?', a: 'Every comune writes its own template, with its own wording and layout. The law does not impose a single text: what matters is that the declaration carries the required details, the reference to penalties and the signature (art. 48 of DPR 445/2000). Our wording follows the article word for word where the law prescribes a formula and stays plain elsewhere.' },
+  { q: 'How do you check that the tax code is right?', a: 'The site computes the control character, the sixteenth letter, with the odd and even value tables published with the 1976 decree that created the code. If the letter does not match, the field flags it. The check cannot tell whether the code really belongs to you, only that it is written consistently.' },
+  { q: 'Does the PDF go through one of your servers?', a: 'No. The file is built by the page’s code in your browser, using the standard fonts every PDF reader has, and downloaded straight to your device. No data is sent, not even for statistics: the site has no database of filled-in forms and could not retrieve one.' },
+];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: h1, description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: h1, path }]), faqSchema(faqs, lang)]} faqs={faqs} breadcrumbs={[{ label: h1 }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">{h1}</h1></header>
+  {it ? (
+  <div class="prose prose-slate max-w-none">
+    <p>Il metodo è semplice: i moduli applicano testi di legge letti su Normattiva il {d(P.retrieved_at)}: il DPR n. 445 del 2000 per autocertificazioni, atti di notorietà e deleghe agli uffici; il codice civile per la procura (articoli 1392 e 1393), il testamento olografo (articolo 602) e la quota di legittima (articoli 536-544); la legge n. 431 del 1998 per la disdetta della locazione abitativa; il decreto-legge n. 7 del 2007 e il Codice del consumo per la disdetta dei servizi e il recesso; il decreto legislativo n. 151 del 2015 per le dimissioni. Normattiva pubblica testi non ufficiali: fa fede la Gazzetta Ufficiale. Le sue note legali consentono la riproduzione dei testi citando la fonte e il carattere non autentico. Termini e quote stanno nel file <code>src/data/params-2026.json</code>; nessuna pagina li scrive a mano.</p>
+    <h2>Il metodo per scrivere le formule dei moduli</h2>
+    <p>Ogni dichiarazione cita l’articolo che la regge, richiama gli articoli 75 e 76 sulle dichiarazioni false e chiude con l’informativa sul trattamento dei dati. Le parole si accordano al genere di chi firma. I modelli dei comuni non sono stati copiati: il testo è scritto a partire dalle norme. Dove la norma lascia libertà, il testo resta breve, perché un ufficio legge meglio una frase precisa che tre righe di formule.</p>
+    <h2>I termini calcolati</h2>
+    <p>Disdetta dell’inquilino: {P.preavviso_locatore_mesi} mesi prima della scadenza per il locatore, {P.recesso_gravi_motivi_mesi} mesi di preavviso per il recesso dell’inquilino per gravi motivi; una lettera ricevuta il 13/11/2026 chiude il contratto il {d(fineAffitto)}. Servizi di telefonia, internet e TV: preavviso massimo di {P.preavviso_max_telefonia_giorni} giorni. Recesso dai contratti a distanza: {P.recesso_distanza_giorni} giorni, {P.recesso_visita_non_richiesta_giorni} per le visite non richieste a domicilio. Dimissioni: revoca entro {P.revoca_dimissioni_giorni} giorni, quindi entro il {d(revoca)} per dimissioni inviate il 13/11/2026. I mesi si contano da data a data; se il giorno non esiste, si prende l’ultimo del mese.</p>
+    <h2>La quota di legittima</h2>
+    <p>Il riquadro del testamento applica le quote degli articoli 537, 538, 540, 542 e 544 del codice civile. Esempio: {$(200000)} con coniuge e due figli lasciano {$(es.disponibile)} di quota disponibile, {$(es.coniuge)} riservati al coniuge e {$(es.figli)} ai figli. Il calcolo non considera le donazioni fatte in vita né i debiti, che in una successione vera contano.</p>
+    <h2>I test</h2>
+    <p>Carattere di controllo del codice fiscale, date e scadenze, quote di legittima, composizione dei testi e fabbricazione del PDF sono verificati da test automatici (<code>src/lib/engine/engine.test.ts</code>), rieseguiti a ogni pubblicazione: un test fallito la blocca.</p>
+    <h2>Cosa il sito non fa</h2>
+    <ul>
+      <li>Non dà consulenza legale e non sostituisce un notaio, un avvocato, un patronato o un CAF.</li>
+      <li>Non invia nulla al posto tuo: né PEC, né raccomandate, né dimissioni.</li>
+      <li>Non produce un testamento da firmare: la legge vuole che sia scritto tutto a mano.</li>
+      <li>Non conserva dati, non chiede account, e-mail o numero di telefono, non vende pratiche.</li>
+    </ul>
+    <h2>Aggiornamenti</h2>
+    <p>Gli aggiornamenti sono manuali, perché le formule cambiano solo quando cambia una legge: si rilegge l’articolo, si correggono testi e parametri, si rieseguono i test, si ripubblica. Ultima rilettura: {d(P.retrieved_at)}. Un errore segnalato a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> viene verificato sulla fonte e corretto. Vedi la <a href={route('editorial', lang)}>politica editoriale</a>.</p>
+    <h2>Tutte le fonti</h2>
+    <ul>{sources.map((s) => <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.label.it}</a></li>)}</ul>
+    <p class="text-sm text-navy-600">Testi riletti il <time datetime={P.retrieved_at}>{d(P.retrieved_at)}</time>.</p>
+  </div>
+  ) : (
+  <div class="prose prose-slate max-w-none">
+    <p>The method is simple: the forms apply legal texts read on Normattiva on {d(P.retrieved_at)}: Presidential Decree 445 of 2000 for self-certifications, sworn declarations and delegations to public offices; the Civil Code for powers of attorney (articles 1392 and 1393), the handwritten will (article 602) and forced-heirship shares (articles 536-544); Law 431 of 1998 for ending a residential lease; Decree-Law 7 of 2007 and the Consumer Code for cancelling services and withdrawal; Legislative Decree 151 of 2015 for resignation. Normattiva publishes unofficial texts: the Gazzetta Ufficiale prevails. Its legal notes allow reproduction of the texts provided the source and their non-authentic nature are stated. Periods and shares live in <code>src/data/params-2026.json</code>; no page types them by hand.</p>
+    <h2>The method behind the form wording</h2>
+    <p>Each declaration cites the article behind it, refers to articles 75 and 76 on false statements and ends with the privacy notice. Italian grammar agrees with the signer’s gender. Comune templates were not copied: the wording is written from the statutes. Where the law leaves room, the text stays short, because an office reads one precise sentence better than three lines of boilerplate.</p>
+    <h2>The deadlines worked out</h2>
+    <p>Tenant notice: {P.preavviso_locatore_mesi} months before expiry for the landlord, {P.recesso_gravi_motivi_mesi} months’ notice for a tenant leaving for serious reasons; a letter received on 13/11/2026 ends the lease on {d(fineAffitto)}. Phone, internet and TV services: at most {P.preavviso_max_telefonia_giorni} days’ notice. Withdrawal from distance contracts: {P.recesso_distanza_giorni} days, {P.recesso_visita_non_richiesta_giorni} after an unsolicited home visit. Resignation: it can be revoked within {P.revoca_dimissioni_giorni} days, so by {d(revoca)} for a resignation sent on 13/11/2026. Months run from date to date; if the day does not exist, the last day of the month is used.</p>
+    <h2>The reserved share</h2>
+    <p>The will box applies the shares of articles 537, 538, 540, 542 and 544 of the Civil Code. Example: {$(200000)} with a spouse and two children leaves {$(es.disponibile)} freely disposable, {$(es.coniuge)} reserved to the spouse and {$(es.figli)} to the children. It ignores lifetime gifts and debts, which count in a real estate.</p>
+    <h2>The tests</h2>
+    <p>The tax-code control character, dates and deadlines, reserved shares, text composition and PDF output are covered by automated tests (<code>src/lib/engine/engine.test.ts</code>), rerun at each publication: a failing test blocks it.</p>
+    <h2>What the site does not do</h2>
+    <ul>
+      <li>It gives no legal advice and does not replace a notary, lawyer, patronato or CAF.</li>
+      <li>It sends nothing for you: no PEC, no registered letter, no resignation.</li>
+      <li>It does not produce a will to sign: the law requires it to be entirely handwritten.</li>
+      <li>It keeps no data, asks for no account, e-mail or phone number and sells no paperwork.</li>
+    </ul>
+    <h2>Updates</h2>
+    <p>Updates are manual, because the wording only changes when a law does: the article is reread, texts and parameters corrected, tests rerun and the site republished. Last reread: {d(P.retrieved_at)}. An error reported to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> is checked against the source and fixed. See the <a href={route('editorial', lang)}>editorial policy</a>.</p>
+    <h2>All sources</h2>
+    <ul>{sources.map((s) => <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.label.en}</a></li>)}</ul>
+    <p class="text-sm text-navy-600">Texts reread on <time datetime={P.retrieved_at}>{d(P.retrieved_at)}</time>.</p>
+  </div>
+  )}
+</PageLayout>

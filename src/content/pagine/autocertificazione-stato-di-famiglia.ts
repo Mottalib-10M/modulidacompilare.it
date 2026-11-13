@@ -1,0 +1,51 @@
+import { defineGuide } from '../../lib/guide-types';
+
+export default defineGuide({
+  id: 'autocertificazione-stato-di-famiglia', group: 'autocertificazioni', order: 2, doc: 'famiglia',
+  related: ['autocertificazione-residenza', 'autocertificazione-reddito', 'autocertificazione-stato-civile'],
+  sources: ['art46', 'art38', 'art75', 'art3'],
+  it: {
+    slug: 'autocertificazione-stato-di-famiglia', nav: 'Stato di famiglia', card: 'Chi vive con te, secondo l’anagrafe',
+    title: 'Autocertificazione stato di famiglia: modulo PDF online',
+    description: 'Compila l’autocertificazione dello stato di famiglia: elenco dei componenti con data di nascita e parentela, formula dell’art. 46 DPR 445/2000, PDF gratis.',
+    h1: 'Autocertificazione dello stato di famiglia online',
+    intro: 'L’autocertificazione dello stato di famiglia elenca le persone iscritte con te nello stesso nucleo all’anagrafe: indica quanti siete, scrivi nomi, date di nascita e rapporto di parentela, e scarica il PDF.',
+    resume: (h) => `Lo stato di famiglia è un dato anagrafico: indica chi compone la tua famiglia anagrafica, cioè l’insieme delle persone che vivono abitualmente nella stessa abitazione e sono legate da matrimonio, unione civile, parentela, affinità, adozione, tutela o vincoli affettivi, e che il comune ha registrato insieme. Non coincide per forza con la famiglia di sangue: un figlio che ha spostato la residenza non ne fa più parte, mentre un convivente iscritto allo stesso indirizzo sì. La lettera f dell’articolo 46 del DPR 445/2000 permette di dichiararlo da soli, con un foglio firmato, al posto del certificato. Serve per assegni, agevolazioni sulle tariffe, graduatorie per gli alloggi pubblici, iscrizioni scolastiche e pratiche di successione. Il modulo di questa pagina accoglie fino a sei componenti, tu compreso, con nome, data e luogo di nascita e rapporto con chi firma. Testo riletto il ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'Il convivente fa parte dello stato di famiglia?', a: 'Sì, se è iscritto all’anagrafe allo stesso indirizzo e il comune lo ha registrato nella tua stessa famiglia anagrafica. La legge considera famiglia anche le persone unite da vincoli affettivi che coabitano. Se invece ha una residenza diversa o forma una famiglia anagrafica separata nella stessa casa, non va scritto nel tuo stato di famiglia.' },
+      { q: 'Devo indicare anche i figli che studiano in un’altra città?', a: 'Dipende dalla loro residenza, non dal luogo in cui dormono durante l’anno. Se il figlio è rimasto residente a casa tua, fa parte dello stato di famiglia anche se vive altrove per studio. Se ha trasferito la residenza nella città universitaria, non ne fa più parte e non va indicato nella dichiarazione.' },
+      { q: 'Lo stato di famiglia serve per l’ISEE?', a: 'Per l’ISEE si usa la Dichiarazione sostitutiva unica, un modulo apposito dell’INPS che contiene già la composizione del nucleo: non serve allegare un’autocertificazione dello stato di famiglia. Attenzione, il nucleo ISEE segue regole proprie e può essere diverso dalla famiglia anagrafica, per esempio per i coniugi con residenze diverse.' },
+      { q: 'Posso dichiarare lo stato di famiglia storico?', a: 'Sì: lo stato di famiglia a una certa data, o quello originario prima di un trasferimento, si può autocertificare se conosci i dati, perché risultano comunque dai registri dell’anagrafe. Nella dichiarazione specifica la data a cui ti riferisci, scrivendola nel campo dei componenti o in una riga a parte prima della firma.' },
+    ],
+    body: (h) => `<h2>Chi entra nello stato di famiglia</h2>
+<p>La famiglia anagrafica è un’unità del registro del comune, non un concetto del codice civile. Ne fanno parte le persone che hanno la stessa residenza e che il comune ha iscritto nello stesso foglio: coniugi e uniti civilmente, figli, genitori, fratelli, conviventi di fatto, ma anche un nipote o un suocero se abitano con te. Chi vive nello stesso appartamento ma ha chiesto di formare una famiglia separata, come due coinquilini, non compare nello stato di famiglia dell’altro.</p>
+<h2>Come compilare il modulo</h2>
+<p>Scegli il numero di persone, tu compreso. Per ognuna, oltre a te, scrivi nome e cognome, luogo e data di nascita e rapporto con chi firma: coniuge, figlio, figlia, padre, madre, convivente. L’anteprima mostra l’elenco nell’ordine in cui lo inserisci. Se vivi da solo, il documento lo dice con una frase sola. Non servono i codici fiscali degli altri componenti, salvo che l’ufficio li chieda espressamente.</p>
+<h2>Quando lo stato di famiglia cambia</h2>
+<p>Ogni nascita, matrimonio, separazione con cambio di residenza, decesso o trasferimento cambia la composizione. Una dichiarazione resa prima del cambiamento non va più usata. Gli uffici controllano consultando l’anagrafe, e una differenza non spiegata può portare alla perdita del beneficio (${h.src('art75', 'articolo 75')}): meglio rifare il modulo, ci vuole un minuto.</p>
+<h2>Dichiarare lo stato di famiglia di un’altra persona</h2>
+<p>L’${h.src('art46', 'articolo 46')} riguarda i propri stati. Per dichiarare la composizione della famiglia di un genitore anziano, per esempio, si usa l’atto di notorietà dell’articolo 47, che consente di attestare fatti relativi ad altri se li conosci direttamente. In alternativa, la persona interessata firma la propria dichiarazione e tu la consegni con una delega e la copia del suo documento, come prevede l’${h.src('art38', 'articolo 38')}.</p>`,
+  },
+  en: {
+    slug: 'family-status-self-certification', nav: 'Household (stato di famiglia)', card: 'Who lives with you, according to the registry',
+    title: 'Stato di famiglia self-certification: Italian PDF form',
+    description: 'Fill in the Italian autocertificazione dello stato di famiglia: household members, birth dates and relationship, article 46 wording of DPR 445/2000, free PDF.',
+    h1: 'Stato di famiglia: household self-certification online',
+    intro: 'The stato di famiglia self-certification lists the people registered in the same household as you: say how many you are, type names, birth dates and relationship, and download the PDF.',
+    resume: (h) => `The stato di famiglia is a registry fact: it shows who makes up your registered household, meaning the people who habitually live in the same home and are linked by marriage, civil union, kinship, in-law ties, adoption, guardianship or emotional bonds, and whom the comune has recorded together. It is not necessarily your blood family: a son who moved his residence elsewhere is no longer part of it, while a partner registered at the same address is. Letter f of article 46 of Presidential Decree 445/2000 lets you state it yourself on a signed sheet instead of a certificate. It is used for allowances, reduced fees, public-housing rankings, school enrolment and inheritance paperwork. The form on this page takes up to six people, you included, with name, date and place of birth and relationship to the signer. Text reread on ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'Does my live-in partner count in the stato di famiglia?', a: 'Yes, if your partner is registered at the same address and the comune recorded both of you in the same registry household. The law treats people who live together through emotional bonds as a family too. If your partner has a different residence, or forms a separate registry household in the same flat, leave them out.' },
+      { q: 'Do I list children who study in another city?', a: 'It depends on their registered residence, not on where they sleep during term. A child who kept residence at your home is part of the household even while living elsewhere to study. A child who moved residence to the university town is no longer part of it and does not go in the declaration.' },
+      { q: 'Do I need this form for the ISEE?', a: 'No. The ISEE uses the Dichiarazione sostitutiva unica, a dedicated INPS form that already lists the household: you do not attach a separate stato di famiglia. Note that the ISEE household follows its own rules and can differ from the registry household, for example for spouses living at different addresses.' },
+      { q: 'Can I declare a past household composition?', a: 'Yes. The household at a given date, or the original one before a move, can be self-certified if you know the details, because it is still recorded in the registry. State the date you are referring to, either in the members field or on a separate line before the signature.' },
+    ],
+    body: (h) => `<h2>Who the stato di famiglia self-certification covers</h2>
+<p>The registry household is a unit of the comune’s register, not a Civil Code concept. It covers people with the same residence whom the comune has entered on the same sheet: spouses and civil partners, children, parents, siblings, unmarried partners, and also a nephew or a parent-in-law living with you. Two flatmates who asked to be separate households do not appear on each other’s stato di famiglia.</p>
+<h2>How to fill in the form</h2>
+<p>Choose the number of people, you included. For each one other than you, type full name, place and date of birth and relationship to the signer: spouse, son, daughter, father, mother, partner. The preview lists them in the order you enter them. If you live alone, the document says so in one sentence. Other members’ tax codes are not needed unless the office asks for them.</p>
+<h2>When the household changes</h2>
+<p>Every birth, marriage, separation with a change of address, death or move changes the composition. A declaration made before the change should no longer be used. Offices check against the registry, and an unexplained difference can cost you the benefit (${h.src('art75', 'article 75')}): redo the form, it takes a minute.</p>
+<h2>Declaring someone else’s household</h2>
+<p>${h.src('art46', 'Article 46')} covers your own status. To declare an elderly parent’s household, for instance, use the article 47 sworn declaration, which allows facts about others that you know first-hand. Alternatively your parent signs their own declaration and you hand it in with a delegation and a copy of their ID, as ${h.src('art38', 'article 38')} provides. Non-EU nationals can use the form for an Italian registry household (${h.src('art3', 'article 3')}).</p>`,
+  },
+});

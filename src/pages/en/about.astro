@@ -1,0 +1,27 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, AUTHOR_ROLE, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { personSchema, organizationSchema, breadcrumbSchema, profilePageSchema } from '../../lib/seo';
+import { displayDate } from '../../lib/format';
+import { P } from '../../lib/engine/params';
+const lang = 'en';
+const d = (iso: string) => displayDate(iso, 'en-GB');
+---
+<PageLayout title="Moduli da Compilare, about us: who writes the Italian forms" description="Who publishes Moduli da Compilare, why forms that write themselves from Italian law, where wording comes from, what the site does not do and how to reach us." lang={lang} jsonLd={[personSchema(lang), organizationSchema(lang), profilePageSchema({ path: route('about', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'About', path: route('about', lang) }])]} breadcrumbs={[{ label: 'About' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Who publishes {SITE_NAMES[lang]}</h1></header>
+  <div class="prose prose-slate max-w-none">
+    <div class="not-prose mb-6"><p class="text-lg font-semibold text-navy-900">{AUTHOR_NAME}</p><p class="text-navy-700">{AUTHOR_ROLE[lang]}</p></div>
+    <p>{SITE_NAMES[lang]} is published by Radif Partners. It is for anyone who has to hand in an Italian self-certification, delegation, notice letter or declaration and would rather not hunt for a Word file to fix by hand.</p>
+    <h2>Why this site</h2>
+    <p>The templates found online differ a lot: different wording, legal references that are sometimes out of date, masculine and feminine to fix word by word, and nearly always a PDF to print and fill in with a pen. Here the document builds itself as you type, with the sentences the law asks for, a tax-code check and, for letters, the deadlines worked out: when the notice must arrive, when the contract ends, until when you can change your mind.</p>
+    <h2>Where the wording comes from</h2>
+    <p>From Presidential Decree 445 of 2000, the Civil Code, Law 431 of 1998, Decree-Law 7 of 2007, the Consumer Code and Legislative Decree 151 of 2015, read on Normattiva. Last reread: {d(P.retrieved_at)}. Everything is explained in the <a href={route('method', lang)}>method</a>.</p>
+    <h2>What we are not</h2>
+    <p>Radif Partners is not a comune, a ministry or any public body, and not a law firm, notary, patronato or CAF. We sell no paperwork service, send nothing on your behalf and give no legal advice: the forms are indicative templates.</p>
+    <h2>Funding and data</h2><p>The site is free and needs no sign-up. The document and the PDF are made in your browser: the names, tax codes and addresses you type are neither sent nor stored. Should advertising ever appear, it will never sit above the form.</p>
+    <h2>Why English too</h2><p>Every page exists in Italian and English, for people living in Italy who must hand in a form in Italian: field labels are translated, the document stays in Italian.</p>
+    <h2>Write to us</h2><p>Outdated wording, a change in the law, a missing form: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. See also the <a href={route('editorial', lang)}>editorial policy</a> and the <a href={route('terms', lang)}>legal notice</a>.</p>
+    <p class="text-sm text-navy-600">Texts reread on <time datetime={P.retrieved_at}>{d(P.retrieved_at)}</time>.</p>
+  </div>
+</PageLayout>

@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'it';
+---
+<PageLayout title={`Politica editoriale – ${SITE_NAMES[lang]}`} description="Da dove vengono le formule dei moduli pubblicati qui, chi ne risponde, quando vengono rilette sulle norme e cosa succede quando qualcuno ci segnala un errore." lang={lang} noindex={true} breadcrumbs={[{ label: 'Politica editoriale' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Politica editoriale e delle correzioni</h1>
+    <p>Una formula sbagliata fa respingere un modulo; un termine calcolato male fa perdere un preavviso. Ecco da dove vengono i nostri testi e cosa facciamo quando uno è sbagliato.</p>
+    <h2>Responsabilità</h2><p>{AUTHOR_NAME} risponde di ogni formula, termine e calcolo del sito. Un testo che non corrisponde alla sua fonte si segnala a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Solo fonti primarie</h2>
+    <ul>
+      <li><strong>le leggi e i codici</strong> (DPR 445/2000, codice civile, legge 431/1998, DL 7/2007, Codice del consumo, D.Lgs. 151/2015), letti su Normattiva;</li>
+      <li><strong>le pagine pubbliche dei ministeri</strong>, come quella del Ministero del lavoro sulle dimissioni telematiche, per la procedura.</li>
+    </ul>
+    <p>I modelli dei comuni e dei siti privati non vengono copiati. Una regola che non abbiamo potuto verificare su un testo pubblicato non viene presentata come certa: lo diciamo.</p>
+    <h2>Modelli, non consulenza</h2><p>Ogni modulo è un modello indicativo. Lo scriviamo sotto ogni titolo e in ogni PDF. Per una situazione particolare, come una successione complessa o un contratto con clausole speciali, rimandiamo a un professionista.</p>
+    <h2>Controlli prima della pubblicazione</h2><p>Codice fiscale, date, termini, quote di legittima, testi composti e PDF sono coperti da test automatici; un aggiornamento che li fa fallire viene bloccato.</p>
+    <h2>Aggiornamenti</h2><p>Gli aggiornamenti sono manuali: a ogni modifica di una norma usata si rilegge l’articolo, si correggono i testi, si rieseguono i test e si ripubblica. La data dell’ultima rilettura è scritta in ogni pagina.</p>
+    <h2>Gestione degli errori</h2>
+    <ol><li>Verifica sul testo di legge.</li><li>Testo o parametro corretto, un test aggiunto.</li><li>Nuova data sulle pagine interessate.</li></ol>
+    <h2>Indipendenza</h2><p>Nessun legame commerciale con studi legali, notai, CAF, patronati o agenzie di pratiche. Nessun link sponsorizzato nei testi. Un eventuale rapporto commerciale verrebbe dichiarato chiaramente.</p>
+    <p>Vedi anche il <a href={route('method', lang)}>metodo</a>. Versione: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

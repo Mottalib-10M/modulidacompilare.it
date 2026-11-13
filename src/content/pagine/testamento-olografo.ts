@@ -1,0 +1,51 @@
+import { defineGuide } from '../../lib/guide-types';
+
+export default defineGuide({
+  id: 'testamento-olografo', group: 'lettere', order: 11, doc: 'testamento', mini: 'legittima',
+  related: ['dichiarazione-sostitutiva-atto-di-notorieta', 'autocertificazione-stato-civile', 'delega-generica'],
+  sources: ['cc602', 'cc537'],
+  it: {
+    slug: 'testamento-olografo', nav: 'Testamento olografo', card: 'Traccia da ricopiare a mano e quota disponibile',
+    title: 'Testamento olografo: fac simile da ricopiare a mano 2026',
+    description: 'Testamento olografo: traccia da ricopiare a mano (art. 602 del codice civile), con il calcolo della quota disponibile e delle quote riservate ai familiari.',
+    h1: 'Testamento olografo: la traccia da ricopiare a mano',
+    intro: 'Il testamento olografo è valido solo se scritto per intero, datato e firmato a mano: qui componi la traccia del testo, controlli la quota che puoi lasciare liberamente e poi la ricopi con la tua grafia.',
+    resume: (h) => `Il testamento olografo è la forma più semplice di testamento previsto dal codice civile: l’articolo 602 chiede che sia scritto per intero, datato e sottoscritto di mano del testatore. Non servono notaio né testimoni, ma basta un errore di forma per renderlo nullo o annullabile: un testo stampato o scritto al computer, anche se firmato a penna, non è un testamento olografo. Per questo il sito non produce un PDF da firmare, ma una traccia da ricopiare: scegli se nominare un solo erede, più eredi in parti uguali, oppure lasciare un bene a una persona e il resto a un erede, e il testo si compone con le formule usuali. La data va scritta con giorno, mese e anno; la firma va alla fine, dopo l’ultima disposizione. Il testamento non può togliere ai familiari stretti, detti legittimari, la quota che la legge riserva loro: il calcolo più sotto mostra quanto puoi lasciare liberamente. Testo riletto il ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'Posso scrivere il testamento al computer e poi firmarlo?', a: 'No. L’articolo 602 del codice civile richiede che l’intero testo sia scritto di mano del testatore: un testamento dattiloscritto, anche se datato e firmato a penna, non vale come olografo ed è nullo. Lo stesso vale per un modulo prestampato con spazi da riempire. La traccia di questa pagina serve solo come appunto da ricopiare.' },
+      { q: 'Cosa succede se dimentico la data?', a: 'La mancanza della data, o una data incompleta, rende il testamento olografo annullabile su richiesta di chi ne ha interesse (art. 606 c.c.). Se la data è sbagliata, la prova della data vera è ammessa solo in casi particolari. Scrivi giorno, mese e anno in modo completo, in lettere o in cifre, prima della firma.' },
+      { q: 'Dove conservo il testamento olografo?', a: 'Dove verrà trovato: in casa con le carte importanti, presso una persona di fiducia o presso un notaio, che può riceverlo in deposito fiduciario. Alla morte, chi lo possiede deve presentarlo a un notaio per la pubblicazione (art. 620 c.c.). Un testamento che nessuno trova non produce effetti.' },
+      { q: 'Posso lasciare tutto a una sola persona se ho figli?', a: `Puoi nominarla erede, ma i figli e il coniuge conservano il diritto alla loro quota riservata. Con un coniuge e due figli, per esempio, la quota disponibile è il ${h.pct(1 - h.P.legittima.coniuge_piu_figli.coniuge - h.P.legittima.coniuge_piu_figli.figli, 0)} del patrimonio: il resto spetta per legge ai familiari, che possono chiedere al giudice la riduzione delle disposizioni che la superano.` },
+    ],
+    body: (h) => `<h2>Le tre regole di forma del testamento olografo</h2>
+<p>Autografia: tutto il testo, dalla prima all’ultima parola, scritto con la tua mano, con qualsiasi penna e su qualsiasi foglio. Data: giorno, mese e anno, scritti a mano. Sottoscrizione: nome e cognome alla fine delle disposizioni, in modo che si capisca chi sei. Sono le tre condizioni dell’${h.src('cc602', 'articolo 602 del codice civile')}. Non serve la carta bollata, non serve l’indicazione del luogo, non serve un testimone.</p>
+<h2>Come usare la traccia</h2>
+<p>Compila i campi a sinistra: i tuoi dati, il modo di dividere i beni, gli eredi con nome, cognome e data di nascita, l’eventuale bene lasciato a una persona e la revoca dei testamenti precedenti. A destra compare il testo in italiano. Copialo su un foglio con la tua grafia, correggendo dove la tua situazione è diversa, e firma. Il pulsante «Copia il testo» serve a tenerne una copia per te, non a stamparlo come testamento.</p>
+<h2>Eredi, legatari e quota di legittima</h2>
+<p>L’erede riceve tutto il patrimonio o una sua quota, debiti compresi; il legatario riceve un bene determinato, come un’auto o una somma. Il codice civile riserva una quota ai legittimari, cioè coniuge, figli e, in mancanza di figli, genitori (${h.src('cc537', 'articoli da 536 a 544')}). Il resto, la quota disponibile, si lascia a chi vuoi. Inserisci il valore del patrimonio e la tua famiglia per vedere la divisione.</p>
+<!--mini:legittima-->
+<p>Il calcolo è indicativo: nella successione vera si sommano le donazioni fatte in vita e si tolgono i debiti, e il coniuge ha anche il diritto di abitare nella casa familiare. Per patrimoni importanti, imprese o famiglie con figli di unioni diverse, parlane con un notaio.</p>`,
+  },
+  en: {
+    slug: 'handwritten-will-italy', nav: 'Handwritten will', card: 'Text to copy out by hand, and the free share',
+    title: 'Holographic will in Italy: template to copy out by hand',
+    description: 'Italian handwritten will: an outline to copy out by hand under article 602 of the Civil Code, with the free share and the shares reserved to your close family.',
+    h1: 'Holographic will in Italy: an outline to copy by hand',
+    intro: 'An Italian holographic will is valid only if entirely handwritten, dated and signed: here you build the outline of the text, check how much you can leave freely, then copy it out in your own handwriting.',
+    resume: (h) => `The handwritten will (testamento olografo) is the simplest kind of will in the Italian Civil Code: article 602 requires it to be written entirely, dated and signed in the testator’s own hand. No notary or witnesses are needed, but one formal slip can make it void or voidable: a text printed or typed on a computer, even if signed in pen, is not a holographic will. That is why the site produces no PDF to sign, only an outline to copy out: choose whether to name a single heir, several heirs in equal shares, or leave one item to a person and the rest to an heir, and the text is composed with the usual Italian wording. The date must show day, month and year; the signature goes at the end, after the last provision. A will cannot take away from close relatives, the forced heirs (legittimari), the share the law reserves for them: the calculation below shows how much you can leave freely. Text reread on ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'Can I type the will and then sign it?', a: 'No. Article 602 of the Civil Code requires the whole text to be in the testator’s handwriting: a typed will, even if dated and signed in pen, is not a valid holographic will and is void. The same applies to a pre-printed form with blanks to fill. The outline on this page is only a draft to copy out.' },
+      { q: 'What if I forget the date?', a: 'A missing or incomplete date makes a holographic will voidable at the request of anyone with an interest (art. 606 Civil Code). If the date is wrong, proof of the true date is allowed only in special cases. Write day, month and year in full, in words or figures, before the signature.' },
+      { q: 'Where should I keep a handwritten will?', a: 'Where it will be found: at home with important papers, with a trusted person or with a notary, who can hold it in safe keeping. On death, whoever holds it must take it to a notary for publication (art. 620 Civil Code). A will nobody finds has no effect.' },
+      { q: 'Can I leave everything to one person if I have children?', a: `You can name that person as heir, but your children and spouse keep their right to the reserved share. With a spouse and two children, for example, the freely disposable share is ${h.pct(1 - h.P.legittima.coniuge_piu_figli.coniuge - h.P.legittima.coniuge_piu_figli.figli, 0)} of the estate: the rest goes by law to the family, who can ask a court to reduce gifts that exceed it.` },
+    ],
+    body: (h) => `<h2>The three formal rules of a holographic will</h2>
+<p>Handwriting: the entire text, first word to last, in your own hand, with any pen on any paper. Date: day, month and year, handwritten. Signature: first name and surname at the end of the provisions, so it is clear who you are. These are the three conditions of ${h.src('cc602', 'article 602 of the Civil Code')}. No stamped paper, no place, no witness is required.</p>
+<h2>How to use the outline</h2>
+<p>Fill in the fields on the left: your details, how to divide your assets, heirs with name, surname and date of birth, any item left to a specific person and whether to revoke earlier wills. On the right the text appears in Italian. Copy it onto a sheet in your own handwriting, adapting it where your situation differs, and sign. The «Copy the text» button is for keeping a note for yourself, not for printing it as a will. If you do not write Italian, a will in another language is also valid, provided it is handwritten, dated and signed.</p>
+<h2>Heirs, legatees and the reserved share</h2>
+<p>An heir receives the whole estate or a share of it, debts included; a legatee receives a specific item, such as a car or a sum of money. The Civil Code reserves a share for the forced heirs: spouse, children and, if there are no children, parents (${h.src('cc537', 'articles 536 to 544')}). The rest, the disposable share, can go to anyone. Enter the value of your estate and your family to see the split.</p>
+<!--mini:legittima-->
+<p>The calculation is indicative: in a real estate lifetime gifts are added back and debts deducted, and the spouse also has the right to live in the family home. For large estates, businesses or families with children from different relationships, speak to a notary.</p>`,
+  },
+});

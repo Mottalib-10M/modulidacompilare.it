@@ -1,0 +1,20 @@
+{
+ "accent": "#1F5F8B",
+ "symbol": "M",
+ "variants": [
+  {
+   "file": "og-it.png",
+   "title": "Autocertificazione, delega, disdetta\ncompila online e scarica il PDF",
+   "subtitle": "DPR 445/2000 · senza registrazione · nessun dato inviato",
+   "badge": "Testi di legge letti su Normattiva, novembre 2026",
+   "brand": "Moduli da Compilare"
+  },
+  {
+   "file": "og-en.png",
+   "title": "Italian forms filled in online\nself-certification, delegation, notice",
+   "subtitle": "DPR 445/2000 · no sign-up · nothing sent",
+   "badge": "Law texts read on Normattiva, November 2026",
+   "brand": "Moduli da Compilare"
+  }
+ ]
+}

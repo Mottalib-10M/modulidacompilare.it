@@ -1,0 +1,22 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Contact – ${SITE_NAMES[lang]}`} description="Write to the publisher of Moduli da Compilare: report outdated wording, a change in the law, a missing form, a question on the method or embedding the widget." lang={lang} noindex={true} breadcrumbs={[{ label: 'Contact' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contact</h1>
+    <p>One address, read every week: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. There is no phone line and we call nobody back: this site sells nothing.</p>
+    <h2>Reporting an error</h2>
+    <p>For wording or a deadline, attach the statute or official page that contradicts the site. Never send us filled-in forms, tax codes or identity documents: we do not need them. The procedure is in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
+    <h2>What we cannot do</h2>
+    <p>We have no access to any public register, we send no forms, PEC or registered letters on your behalf and we keep none of the forms you fill in. We give no legal advice on individual cases: for an estate or an unusual contract, see a notary, a lawyer, a CAF or a patronato.</p>
+    <h2>Embedding the generator</h2>
+    <p>Schools, associations, help desks: the form generator can be embedded for free with an iframe. The code is on the <a href={route('widget', lang)}>Embed the form</a> page.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+    <p>{AUTHOR_NAME} is responsible for the content of {SITE_NAMES[lang]}; full details are in the <a href={route('terms', lang)}>legal notice</a>. Page reviewed on {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

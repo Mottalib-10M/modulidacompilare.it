@@ -1,0 +1,33 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CLARITY_ID, CONTACT_EMAIL, GA4_ID, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Legal notice – ${SITE_NAMES[lang]}`} description="Publisher, publication director, host, intellectual property, legal texts and official pages quoted, limits of liability and the law governing this website." lang={lang} noindex={true} breadcrumbs={[{ label: 'Legal notice' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Legal notice</h1>
+    <p>Information published under article 6 III-1 of French law no. 2004-575 of 21 June 2004 on confidence in the digital economy (LCEN).</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+    <p>Publication director: {AUTHOR_NAME}, responsible for the content published on {SITE_URL}.</p>
+    <h2>Host</h2>
+    <LegalIdentity mode="hosting" lang={lang} />
+    <h2>Purpose of the site and no advice</h2>
+    <p>The site lets visitors fill in, free of charge and from their own inputs, Italian templates for self-certifications, substitute declarations, delegations, notice letters and an online-resignation checklist, and shows an outline of a handwritten will to copy out by hand. The templates are indicative and are not legal advice, an opinion or personal guidance: the signer remains responsible for what is declared. The site is independent: it is affiliated with no ministry, comune, INPS, Revenue Agency or other public body, nor with any law firm, notary, CAF or patronato, and uses no official logo. Method and limits: <a href={route('method', lang)}>method</a>.</p>
+    <h2>Sources quoted</h2>
+    <p>Statutes and codes read on Normattiva, whose legal notes allow the texts to be reproduced provided the source and their non-authentic, free nature are stated: only the Gazzetta Ufficiale is authoritative. Legislative and regulatory texts are not covered by copyright (article 5 of Italian law 633 of 1941). Templates published by comuni and other bodies have not been reproduced.</p>
+    <h2>Limits of liability</h2>
+    <p>Information is reread against the official texts and checked, with no guarantee of being error-free or always current. Computed deadlines are indicative. The publisher cannot be held liable for the use of a form or a date shown here. Errors can be reported through the <a href={route('contact', lang)}>contact</a> page.</p>
+    <h2>Intellectual property</h2>
+    <p>Text, graphics and code are protected and remain the publisher’s property; short quotations are allowed with a link to the original page. The sources quoted belong to their respective owners.</p>
+    <h2>Embedding the tool</h2><p>The form generator can be embedded free as an iframe, keeping the visible link: see the <a href={route('widget', lang)}>embed page</a>.</p>
+    {/* gen-legal-pages:terms */}
+    <h2>Personal data and cookies</h2>
+    {GA4_ID ? (<p>What you type in the calculators stays in your browser. The site sets Google Analytics audience measurement cookies (<code>_ga</code>, <code>_ga_{GA4_ID.replace('G-', '')}</code>, 13 months at most), with no advertising{CLARITY_ID && '; page stability is monitored with Microsoft Clarity, cookie-free'}. Details, legal basis and how to object: <a href={route('privacy', lang)}>privacy policy</a> and <a href={route('cookies', lang)}>cookies</a> page.</p>) : (<p>What you type in the calculators stays in your browser and the site sets no cookies{CLARITY_ID && '; page stability is monitored anonymously with Microsoft Clarity, cookie-free'}. See the <a href={route('privacy', lang)}>privacy policy</a> and the <a href={route('cookies', lang)}>cookies</a> page.</p>)}
+    {/* /gen-legal-pages:terms */}
+    <h2>Reporting</h2><p>Unlawful content: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, with the page address and the reason.</p>
+    <h2>Governing law</h2><p>French law, the publisher being established in France. Failing an amicable settlement, the competent courts of {LEGAL.jurisdiction}. Updated: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

@@ -1,0 +1,51 @@
+import { defineGuide } from '../../lib/guide-types';
+
+export default defineGuide({
+  id: 'lettera-di-disdetta', group: 'lettere', order: 13, doc: 'servizio',
+  related: ['disdetta-contratto-affitto', 'delega-generica', 'dimissioni-online'],
+  sources: ['dl7', 'cdc52'],
+  it: {
+    slug: 'lettera-di-disdetta', nav: 'Disdetta di un servizio', card: 'Telefono, internet, palestra, acquisti online',
+    title: 'Lettera di disdetta: fac simile per telefono, internet e TV',
+    description: 'Lettera di disdetta per telefono, internet, pay TV, palestra o abbonamenti, e recesso di 14 giorni dagli acquisti online, con la data di fine calcolata.',
+    h1: 'Lettera di disdetta di un contratto o di un servizio',
+    intro: 'La lettera di disdetta chiude un contratto di telefono, internet, pay TV o un abbonamento, oppure esercita il recesso di 14 giorni da un acquisto online: scegli il caso e il sito calcola i termini.',
+    resume: (h) => `Per i contratti con gli operatori di telefonia, reti televisive e comunicazioni elettroniche, l’articolo 1, comma 3, del decreto-legge n. 7 del 2007, detto decreto Bersani, dà al cliente il diritto di recedere o di passare a un altro operatore in qualsiasi momento, senza vincoli temporali e senza spese non giustificate, con un preavviso che non può superare ${h.num(h.P.preavviso_max_telefonia_giorni)} giorni. Il comma 3-bis aggiunge che il recesso si può comunicare anche con lo stesso canale usato per l’attivazione, per esempio online. Per i contratti conclusi a distanza o fuori dai locali commerciali, il Codice del consumo dà ${h.num(h.P.recesso_distanza_giorni)} giorni per ripensarci senza motivo (articolo 52), che diventano ${h.num(h.P.recesso_visita_non_richiesta_giorni)} per i contratti stipulati durante una visita non richiesta a domicilio. Per palestre e altri abbonamenti vale ciò che dice il contratto. Il modulo di questa pagina scrive la lettera giusta per ciascun caso e calcola la data di cessazione o l’ultimo giorno utile. Testo riletto il ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'L’operatore può chiedermi 45 o 60 giorni di preavviso?', a: `No, per telefono, internet e TV il preavviso non può superare ${h.num(h.P.preavviso_max_telefonia_giorni)} giorni (art. 1, comma 3, DL 7/2007). Se il contratto indica un termine più lungo, la clausola non si applica oltre quel limite: il modulo, se scegli più di ${h.num(h.P.preavviso_max_telefonia_giorni)} giorni, scrive comunque ${h.num(h.P.preavviso_max_telefonia_giorni)} e ti avvisa.` },
+      { q: 'Devo pagare una penale se disdico prima dei 24 mesi?', a: 'Non una penale, ma l’operatore può chiedere i costi effettivamente sostenuti e, se avevi un’offerta promozionale o un telefono a rate, la restituzione degli sconti o le rate residue in misura proporzionata al valore del contratto e alla durata residua. Le cifre sono indicate nella sintesi contrattuale: leggila prima di inviare la disdetta.' },
+      { q: 'Come conto i 14 giorni per un acquisto online?', a: `Per i beni il termine parte dal giorno in cui ricevi la merce; per i servizi dal giorno della conclusione del contratto (art. 52 del Codice del consumo). Il modulo conta ${h.num(h.P.recesso_distanza_giorni)} giorni dalla data che inserisci. Se il venditore non ti ha informato del diritto di recesso, il termine si allunga fino a dodici mesi.` },
+      { q: 'Basta una PEC per disdire la palestra?', a: 'Dipende dal contratto: molte palestre chiedono la raccomandata o la consegna in segreteria con ricevuta, e prevedono un preavviso. Senza una clausola di recesso, un abbonamento annuale si chiude in genere alla scadenza. Se l’abbonamento è stato venduto online, valgono anche i 14 giorni del Codice del consumo.' },
+    ],
+    body: (h) => `<h2>Tre casi nel modulo</h2>
+<p>«Telefono, internet o pay TV»: lettera di disdetta con il richiamo al ${h.src('dl7', 'decreto-legge n. 7 del 2007')}, preavviso limitato a ${h.num(h.P.preavviso_max_telefonia_giorni)} giorni e data di cessazione calcolata. «Palestra, abbonamento o altro servizio»: lettera con il preavviso che indichi tu, letto nel contratto. «Contratto online o fuori dai negozi»: lettera di recesso con il richiamo all’${h.src('cdc52', 'articolo 52 del Codice del consumo')}, richiesta di rimborso e controllo dell’ultimo giorno utile.</p>
+<h2>Quali dati servono</h2>
+<p>Il codice cliente o il numero di contratto è il dato più importante: senza, l’operatore può non riuscire a collegare la lettera al tuo contratto. Lo trovi in fattura o nell’area clienti. Scrivi il tuo codice fiscale come intestatario e l’indirizzo o la PEC del fornitore indicati nelle condizioni generali per le comunicazioni di recesso, che a volte sono diversi da quelli della sede legale.</p>
+<h2>Come inviarla</h2>
+<p>La raccomandata con ricevuta di ritorno e la PEC danno la prova della data. Per telefono e internet puoi usare anche il canale con cui hai attivato il servizio, come il sito o il negozio: conserva la conferma. Allega la copia del documento d’identità, come chiedono quasi tutti i fornitori.</p>
+<h2>Dopo la disdetta</h2>
+<p>Restituisci modem e decoder in comodato, se il contratto lo prevede, e conserva la ricevuta. Controlla l’ultima fattura: dopo la data di cessazione non devono esserci addebiti per il servizio. Se continuano, scrivi al fornitore e, per la telefonia, puoi chiedere la conciliazione gratuita al Corecom della tua regione.</p>`,
+  },
+  en: {
+    slug: 'italian-cancellation-letter', nav: 'Service cancellation', card: 'Phone, internet, gym, online purchases',
+    title: 'Cancellation letter in Italy: phone, internet, TV and gyms',
+    description: 'Italian cancellation letter (lettera di disdetta) for phone, internet, pay TV, gyms or subscriptions, or the 14-day withdrawal from an online purchase, as PDF.',
+    h1: 'Lettera di disdetta: Italian contract cancellation letter',
+    intro: 'The lettera di disdetta, the cancellation letter used in Italy, ends a phone, internet, pay-TV or subscription contract, or exercises the 14-day withdrawal from an online purchase: choose the case and the site works out the deadlines.',
+    resume: (h) => `For contracts with phone, television and electronic-communications operators, article 1, paragraph 3, of Decree-Law 7 of 2007, known as the Bersani decree, gives customers the right to cancel or switch provider at any time, with no minimum term and no unjustified charges, with notice that may not exceed ${h.num(h.P.preavviso_max_telefonia_giorni)} days. Paragraph 3-bis adds that cancellation can be sent through the same channel used to sign up, online for example. For contracts made at a distance or off business premises, the Consumer Code gives ${h.num(h.P.recesso_distanza_giorni)} days to change your mind without giving a reason (article 52), rising to ${h.num(h.P.recesso_visita_non_richiesta_giorni)} for contracts signed during an unsolicited home visit. For gyms and other subscriptions the contract applies. The form on this page writes the right letter for each case, in Italian, and works out the end date or the last valid day. Text reread on ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'Can my provider demand 45 or 60 days’ notice?', a: `No. For phone, internet and TV notice cannot exceed ${h.num(h.P.preavviso_max_telefonia_giorni)} days (art. 1(3) DL 7/2007). If the contract sets a longer period, the clause does not apply beyond that limit: if you pick more than ${h.num(h.P.preavviso_max_telefonia_giorni)} days, the form still writes ${h.num(h.P.preavviso_max_telefonia_giorni)} and warns you.` },
+      { q: 'Is there a penalty for cancelling before 24 months?', a: 'Not a penalty, but the provider may charge the costs it actually incurred and, if you had a promotional deal or a phone on instalments, claw back discounts or ask for the remaining instalments in proportion to the contract value and remaining term. The amounts are in the contract summary: read it before you send the letter.' },
+      { q: 'How do I count the 14 days for an online purchase?', a: `For goods the period starts on the day you receive them; for services on the day the contract is made (art. 52 Consumer Code). The form counts ${h.num(h.P.recesso_distanza_giorni)} days from the date you enter. If the seller never told you about the right of withdrawal, the period is extended by up to twelve months.` },
+      { q: 'Is a PEC enough to cancel a gym membership?', a: 'It depends on the contract: many gyms want a registered letter or delivery at reception against a receipt, and set a notice period. Without a withdrawal clause an annual membership usually ends at expiry. If the membership was sold online, the Consumer Code’s 14 days also apply.' },
+    ],
+    body: (h) => `<h2>Cancellation letter in Italy: three cases in the form</h2>
+<p>«Phone, internet or pay TV»: a cancellation letter citing ${h.src('dl7', 'Decree-Law 7 of 2007')}, notice capped at ${h.num(h.P.preavviso_max_telefonia_giorni)} days and the end date worked out. «Gym, subscription or other service»: a letter with the notice you take from your contract. «Online or doorstep contract»: a withdrawal letter citing ${h.src('cdc52', 'article 52 of the Consumer Code')}, with a refund request and a check on the last valid day.</p>
+<h2>The details you need</h2>
+<p>The customer or contract number matters most: without it the provider may not match the letter to your account. It is on your bill or in your online account. Give your tax code as account holder, and the provider’s address or PEC listed in the terms for cancellation notices, which sometimes differs from the registered office.</p>
+<h2>How to send it</h2>
+<p>A registered letter with return receipt or a PEC proves the date. For phone and internet you may also use the channel you signed up through, such as the website or the shop: keep the confirmation. Attach a copy of your ID, as nearly every provider asks.</p>
+<h2>After cancelling</h2>
+<p>Return any loaned modem or decoder if the contract says so, and keep the receipt. Check the final bill: there should be no service charges after the end date. If they continue, write to the provider and, for telecoms, you can ask the regional Corecom for free conciliation.</p>`,
+  },
+});

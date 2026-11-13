@@ -1,0 +1,21 @@
+{
+ "name": "Moduli da Compilare",
+ "short_name": "Moduli da Compilare",
+ "description": "Autocertificazione, delega, disdetta e dichiarazione sostitutiva da compilare online: PDF subito, gratis, senza registrazione, sul testo del DPR 445/2000.",
+ "start_url": "/it/",
+ "display": "standalone",
+ "background_color": "#ffffff",
+ "theme_color": "#1F5F8B",
+ "icons": [
+  {
+   "src": "/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}

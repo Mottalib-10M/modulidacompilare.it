@@ -1,0 +1,51 @@
+import { defineGuide } from '../../lib/guide-types';
+
+export default defineGuide({
+  id: 'autocertificazione-reddito', group: 'autocertificazioni', order: 6, doc: 'reddito',
+  related: ['autocertificazione-stato-di-famiglia', 'dichiarazione-sostitutiva-atto-di-notorieta', 'autocertificazione-titolo-di-studio'],
+  sources: ['art46', 'art75', 'art76', 'art37'],
+  it: {
+    slug: 'autocertificazione-reddito', nav: 'Reddito', card: 'Reddito complessivo, imponibile o assenza di reddito',
+    title: 'Autocertificazione del reddito: modulo PDF da compilare',
+    description: 'Autocertificazione del reddito online: reddito complessivo o imponibile di un anno, o nessun reddito, con la fonte (730, Redditi, CU). PDF gratis senza account.',
+    h1: 'Autocertificazione del reddito da compilare online',
+    intro: 'L’autocertificazione del reddito dichiara quanto hai guadagnato in un anno, o che non hai avuto redditi: scegli l’anno, il tipo di reddito e il documento da cui lo leggi, poi scarica il PDF.',
+    resume: (h) => `La situazione reddituale o economica è tra i dati che l’articolo 46 del DPR 445/2000, alla lettera o, permette di dichiarare con un foglio firmato, anche ai fini della concessione di benefici previsti da leggi speciali. Accanto, la lettera p copre l’assolvimento degli obblighi contributivi con l’importo versato. Nella pratica l’autocertificazione del reddito serve per tariffe agevolate di mense e trasporti, esenzioni dal ticket legate al reddito, borse di studio, contributi comunali, gratuito patrocinio e domande di alloggio. Il modulo di questa pagina chiede l’anno dei redditi, se dichiari il reddito complessivo, quello imponibile ai fini dell’IRPEF oppure l’assenza di reddito, l’importo e il documento da cui lo ricavi: modello 730, modello Redditi o Certificazione Unica. L’ufficio confronta poi i dati con l’Agenzia delle entrate, quindi conviene copiarli esattamente dal rigo giusto. Non serve marca da bollo. Testo riletto il ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'Qual è la differenza tra reddito complessivo e imponibile?', a: 'Il reddito complessivo è la somma dei redditi dell’anno: lavoro, pensione, fabbricati, impresa. Il reddito imponibile è quello che resta dopo le deduzioni, come i contributi previdenziali volontari o l’abitazione principale, ed è la base su cui si calcola l’IRPEF. I bandi dicono quale dei due usare: in mancanza, chiedi all’ufficio prima di firmare.' },
+      { q: 'In quale rigo del 730 trovo il reddito complessivo?', a: 'Nel prospetto di liquidazione del 730, il modello 730-3, il reddito complessivo e il reddito imponibile hanno righi propri all’inizio del prospetto. Nella Certificazione Unica il reddito da lavoro dipendente o da pensione è nei punti 1 e 2 e seguenti. La numerazione dei righi può cambiare da un anno all’altro: leggi l’intestazione del rigo, non il numero.' },
+      { q: 'Posso autocertificare di non avere redditi?', a: 'Sì. Il modulo ha la scelta «nessun reddito nell’anno»: la frase diventa «di non aver percepito redditi nell’anno…». Fai attenzione a redditi che si dimenticano spesso, come gli affitti, le rendite catastali di case non abitate o i compensi occasionali: anche pochi euro rendono falsa la dichiarazione.' },
+      { q: 'L’autocertificazione del reddito sostituisce l’ISEE?', a: 'No. Quando una prestazione si basa sull’ISEE, serve la Dichiarazione sostitutiva unica presentata all’INPS, che considera redditi e patrimoni di tutto il nucleo. L’autocertificazione del reddito vale per i benefici che guardano solo al reddito di una persona, o quando il bando la chiede espressamente.' },
+    ],
+    body: (h) => `<h2>Da dove copiare i numeri</h2>
+<p>Usa la dichiarazione presentata per l’anno richiesto. Con il 730 i dati sono nel prospetto di liquidazione; con il modello Redditi Persone fisiche nel quadro RN; se non hai presentato una dichiarazione, nella Certificazione Unica che il datore di lavoro o l’ente pensionistico ti consegna entro marzo. Scrivi l’importo come appare, con i centesimi se ci sono. Nel modulo il campo della fonte è facoltativo: indicarla aiuta l’ufficio a controllare più in fretta.</p>
+<h2>Quale anno dichiarare</h2>
+<p>Molti bandi chiedono i redditi dell’anno precedente, altri quelli di due anni prima, perché la dichiarazione dell’anno appena chiuso non è ancora stata presentata. Leggi il bando: l’anno sbagliato è l’errore più comune e rende inutile la domanda anche se l’importo è giusto. Se chiedi un beneficio a inizio anno, i redditi più recenti disponibili sono spesso quelli di due anni prima.</p>
+<h2>I controlli sul reddito</h2>
+<p>Gli enti verificano incrociando i dati con l’anagrafe tributaria. Se il reddito dichiarato è più basso di quello reale, il beneficio decade, le somme vanno restituite e per ${h.num(h.P.divieto_benefici_anni)} anni si è esclusi da contributi e agevolazioni (${h.src('art75', 'articolo 75')}). In più c’è la denuncia per falso, con la pena aumentata (${h.src('art76', 'articolo 76')}). Un errore di poche decine di euro dovuto a un arrotondamento si chiarisce invece con l’ufficio.</p>
+<h2>Reddito di un familiare</h2>
+<p>L’${h.src('art46', 'articolo 46')} riguarda la tua situazione reddituale. Se un ufficio chiede il reddito del coniuge o di un genitore, ognuno firma la propria dichiarazione, oppure si usa l’atto di notorietà per i fatti che conosci direttamente. La dichiarazione è esente da bollo (${h.src('art37', 'articolo 37')}).</p>`,
+  },
+  en: {
+    slug: 'income-self-certification', nav: 'Income', card: 'Total or taxable income, or no income at all',
+    title: 'Income self-certification in Italy: fill in the PDF form',
+    description: 'Italian income self-certification online: total or taxable income for a year, or no income at all, with the source (730, Redditi, CU). Free PDF and no account.',
+    h1: 'Income self-certification (autocertificazione del reddito)',
+    intro: 'The income self-certification states how much you earned in a year, or that you had no income: pick the year, the kind of income and the document you read it from, then download the PDF.',
+    resume: (h) => `Income or economic situation is among the facts that article 46 of Presidential Decree 445/2000, letter o, lets you declare on a signed sheet, including for benefits granted under special laws. Next to it, letter p covers having paid social-security contributions, with the amount paid. In practice the income self-certification is used for reduced school-meal and transport fees, income-based exemptions from health charges, study grants, municipal contributions, legal aid and housing applications. The form on this page asks for the income year, whether you declare total income, income taxable for IRPEF or no income, the amount, and the document you take it from: Form 730, Form Redditi or the Certificazione Unica. The office then compares the figures with the Revenue Agency, so copy them exactly from the right line. No stamp duty is due. Text reread on ${h.date(h.P.retrieved_at)}.`,
+    faqs: (h) => [
+      { q: 'What is the difference between total and taxable income?', a: 'Total income (reddito complessivo) adds up the year’s income: employment, pension, buildings, business. Taxable income (reddito imponibile) is what remains after deductions, such as voluntary pension contributions or the main home, and is the base IRPEF is charged on. The call for applications says which one to use; if it does not, ask the office before signing.' },
+      { q: 'Where on Form 730 is the total income?', a: 'In the 730 settlement summary, Form 730-3, total income and taxable income have their own lines near the top. On the Certificazione Unica, employment or pension income is in boxes 1 and 2 onwards. Line numbers can change from year to year: go by the line heading, not the number.' },
+      { q: 'Can I self-certify that I had no income?', a: 'Yes. The form has a «no income in the year» choice, and the sentence becomes «di non aver percepito redditi nell’anno…». Watch out for income people forget, such as rent received, the cadastral income of an empty second home or occasional fees: even a few euros make the declaration false.' },
+      { q: 'Does an income self-certification replace the ISEE?', a: 'No. When a benefit depends on the ISEE, you need the Dichiarazione sostitutiva unica filed with INPS, which looks at the income and assets of the whole household. The income self-certification is for benefits that look only at one person’s income, or when the call for applications asks for it.' },
+    ],
+    body: (h) => `<h2>Income self-certification in Italy: where to copy the figures</h2>
+<p>Use the return filed for the year requested. With Form 730 the figures are in the settlement summary; with Form Redditi Persone fisiche in section RN; if you filed no return, on the Certificazione Unica your employer or pension body hands you by March. Write the amount as shown, with cents if any. The source field is optional in the form, but naming it helps the office check faster.</p>
+<h2>Which year to declare</h2>
+<p>Many calls ask for the previous year’s income, others for income from two years earlier, because the return for the year just ended has not been filed yet. Read the call: the wrong year is the most common mistake and sinks the application even when the amount is right. Early in the year the most recent available income is often from two years before.</p>
+<h2>How income is checked</h2>
+<p>Offices cross-check with the tax register. If the declared income is lower than the real one, the benefit is withdrawn, payments must be returned and for ${h.num(h.P.divieto_benefici_anni)} years you are barred from grants and reliefs (${h.src('art75', 'article 75')}), on top of a criminal charge with a heavier penalty (${h.src('art76', 'article 76')}). A gap of a few euros from rounding is simply cleared up with the office.</p>
+<h2>A relative’s income</h2>
+<p>${h.src('art46', 'Article 46')} covers your own income. If an office wants your spouse’s or a parent’s income, each person signs their own declaration, or you use the sworn declaration for facts you know first-hand. The declaration is exempt from stamp duty (${h.src('art37', 'article 37')}).</p>`,
+  },
+});
