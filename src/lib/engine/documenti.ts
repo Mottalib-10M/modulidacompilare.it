@@ -23,19 +23,23 @@ export interface Documento { id: string; nome: L2; campi: Campo[]; componi: (v: 
 const VUOTO = '____________';
 const x = (v: Valori, id: string, vuoto = VUOTO) => (v[id] ?? '').trim() || vuoto;
 const F = (v: Valori, id = 'sesso') => v[id] === 'F';
-const g = (v: Valori, o: string, a: string, id = 'sesso') => (F(v, id) ? a : o);
+/** Accord au genre ; tant que « Chi firma » n'est pas choisi, l'aperçu montre les deux formes (« Il sottoscritto/La sottoscritta »). */
+const g = (v: Valori, o: string, a: string, id = 'sesso') => (o === a ? o : F(v, id) ? a : v[id] === 'M' ? o : `${o}/${a}`);
 const d = (v: Valori, id: string) => (valida(v[id] ?? '') ? dataIt(v[id]) : '__/__/____');
 
-const SESSO: Campo = { id: 'sesso', label: { it: 'Chi firma', en: 'Who signs' }, tipo: 'scelta', def: 'F', opzioni: [{ v: 'F', l: { it: 'Donna (la sottoscritta)', en: 'A woman (la sottoscritta)' } }, { v: 'M', l: { it: 'Uomo (il sottoscritto)', en: 'A man (il sottoscritto)' } }] };
+// Aucun choix qui engage n'a de valeur par défaut (testeurs naïfs du 2026-11-14) : « Donna » pré-choisi
+// faisait signer « La sottoscritta… nata a » à un homme pressé. Un `scelta` sans `def` est obligatoire :
+// la liste s'ouvre sur « Scegli… » et le PDF attend le choix (`sceltaMancanti`).
+const SESSO: Campo = { id: 'sesso', label: { it: 'Chi firma: sei un uomo o una donna?', en: 'Who signs: a man or a woman?' }, tipo: 'scelta', aiuto: { it: 'Serve per scrivere «il sottoscritto» o «la sottoscritta»', en: 'Used to write «il sottoscritto» or «la sottoscritta»' }, opzioni: [{ v: 'M', l: { it: 'Uomo (il sottoscritto)', en: 'A man (il sottoscritto)' } }, { v: 'F', l: { it: 'Donna (la sottoscritta)', en: 'A woman (la sottoscritta)' } }] };
 const NOME: Campo = { id: 'nome', label: { it: 'Nome', en: 'First name' }, tipo: 'testo' };
 const COGNOME: Campo = { id: 'cognome', label: { it: 'Cognome', en: 'Surname' }, tipo: 'testo' };
 const LUOGO_N: Campo = { id: 'luogo_nascita', label: { it: 'Luogo di nascita (comune e provincia, o Stato estero)', en: 'Place of birth (town and province, or country)' }, tipo: 'testo' };
-const DATA_N: Campo = { id: 'data_nascita', label: { it: 'Data di nascita', en: 'Date of birth' }, tipo: 'data' };
+const DATA_N: Campo = { id: 'data_nascita', label: { it: 'Data di nascita (giorno/mese/anno)', en: 'Date of birth (day/month/year)' }, tipo: 'data' };
 const CF: Campo = { id: 'cf', label: { it: 'Codice fiscale', en: 'Codice fiscale (tax code)' }, tipo: 'cf', aiuto: { it: '16 caratteri, sulla tessera sanitaria', en: '16 characters, printed on the health card' } };
 const COMUNE: Campo = { id: 'comune', label: { it: 'Comune di residenza', en: 'Town of residence (comune)' }, tipo: 'testo' };
 const INDIRIZZO: Campo = { id: 'indirizzo', label: { it: 'Indirizzo (via e numero civico)', en: 'Address (street and number)' }, tipo: 'testo' };
 const LUOGO_F: Campo = { id: 'luogo_firma', label: { it: 'Luogo della firma', en: 'Place of signature' }, tipo: 'testo', facoltativo: true, aiuto: { it: 'Se vuoto, il comune di residenza', en: 'If empty, your town of residence' } };
-const DATA_F: Campo = { id: 'data_firma', label: { it: 'Data della firma', en: 'Date of signature' }, tipo: 'data' };
+const DATA_F: Campo = { id: 'data_firma', label: { it: 'Data della firma (giorno/mese/anno)', en: 'Date of signature (day/month/year)' }, tipo: 'data' };
 const ANAGRAFICA = [SESSO, NOME, COGNOME, LUOGO_N, DATA_N, CF, COMUNE, INDIRIZZO];
 const CHIUSURA = [LUOGO_F, DATA_F];
 
@@ -78,7 +82,7 @@ function art46(v: Valori, dichiara: string[]): Composto {
 const PROMEMORIA_46: L2[] = [
   { it: 'Firma a mano con la penna, oppure con firma digitale se invii il file.', en: 'Sign by hand in pen, or with a digital signature if you send the file.' },
   { it: 'Gli uffici pubblici e i gestori di pubblici servizi devono accettarla (art. 74 DPR 445/2000); un privato può chiedere il certificato.', en: 'Public offices and public-service operators must accept it (art. 74 DPR 445/2000); a private party may still ask for the certificate.' },
-  { it: 'Se la invii per e-mail o PEC, o non la firmi davanti all’impiegato, allega la copia di un documento d’identità.', en: 'If you send it by e-mail or PEC, or do not sign in front of the clerk, attach a copy of an identity document.' },
+  { it: 'Se la mandi per e-mail (anche per posta elettronica certificata, la PEC) o non la firmi davanti all’impiegato, allega la copia di un documento d’identità.', en: 'If you send it by e-mail (including certified e-mail, PEC) or do not sign in front of the clerk, attach a copy of an identity document.' },
 ];
 
 const RAPPORTI = [
@@ -94,7 +98,7 @@ const RAPP_IT: Record<string, string> = { coniuge: 'coniuge', figlio: 'figlio/a'
 const MEMBRI = [2, 3, 4, 5, 6].flatMap((k): Campo[] => [
   { id: `m${k}_nome`, label: { it: `Componente ${k}: nome e cognome`, en: `Member ${k}: full name` }, tipo: 'testo', se: (v) => Number(v.componenti) >= k },
   { id: `m${k}_nascita`, label: { it: `Componente ${k}: luogo e data di nascita`, en: `Member ${k}: place and date of birth` }, tipo: 'testo', se: (v) => Number(v.componenti) >= k, aiuto: { it: 'Esempio: Torino, 04/07/2012', en: 'Example: Torino, 04/07/2012' } },
-  { id: `m${k}_rapporto`, label: { it: `Componente ${k}: rapporto con te`, en: `Member ${k}: relationship to you` }, tipo: 'scelta', def: k === 2 ? 'coniuge' : 'figlio', opzioni: RAPPORTI, se: (v) => Number(v.componenti) >= k },
+  { id: `m${k}_rapporto`, label: { it: `Componente ${k}: rapporto con te`, en: `Member ${k}: relationship to you` }, tipo: 'scelta', opzioni: RAPPORTI, se: (v) => Number(v.componenti) >= k },
 ]);
 
 export const DOCUMENTI: Documento[] = [
@@ -108,15 +112,16 @@ export const DOCUMENTI: Documento[] = [
   {
     id: 'famiglia', file: 'autocertificazione-stato-di-famiglia', pdf: true,
     nome: { it: 'Autocertificazione dello stato di famiglia', en: 'Family status self-certification' },
-    campi: [...ANAGRAFICA, { id: 'componenti', label: { it: 'Persone nella famiglia anagrafica, tu compreso', en: 'People in the registered household, you included' }, tipo: 'scelta', def: '3', opzioni: ['1', '2', '3', '4', '5', '6'].map((n) => ({ v: n, l: { it: n === '1' ? '1 (vivo da solo)' : n, en: n === '1' ? '1 (I live alone)' : n } })) }, ...MEMBRI, ...CHIUSURA],
+    campi: [...ANAGRAFICA, { id: 'componenti', label: { it: 'Persone nella famiglia anagrafica, tu compreso', en: 'People in the registered household, you included' }, tipo: 'scelta', opzioni: ['1', '2', '3', '4', '5', '6'].map((n) => ({ v: n, l: { it: n === '1' ? '1 (vivo da solo)' : n, en: n === '1' ? '1 (I live alone)' : n } })) }, ...MEMBRI, ...CHIUSURA],
     componi: (v) => {
+      if (!v.componenti) return art46(v, [`che la propria famiglia anagrafica, residente a ${x(v, 'comune')} in ${x(v, 'indirizzo')}, è così composta: ${VUOTO}`]);
       const n = Number(v.componenti) || 1;
       const righe = [`che la propria famiglia anagrafica, residente a ${x(v, 'comune')} in ${x(v, 'indirizzo')}, è così composta:`, `1. ${x(v, 'nome')} ${x(v, 'cognome')}, ${g(v, 'nato', 'nata')} a ${x(v, 'luogo_nascita')} il ${d(v, 'data_nascita')}, ${g(v, 'dichiarante', 'dichiarante')};`];
       for (let k = 2; k <= n; k++) righe.push(`${k}. ${x(v, `m${k}_nome`)}, ${x(v, `m${k}_nascita`)}, ${RAPP_IT[v[`m${k}_rapporto`]] ?? 'componente'}${k === n ? '.' : ';'}`);
       if (n === 1) righe[1] = righe[1].replace(/;$/, '.');
       return art46(v, n === 1 ? [`che la propria famiglia anagrafica, residente a ${x(v, 'comune')} in ${x(v, 'indirizzo')}, è composta ${g(v, 'dal solo dichiarante', 'dalla sola dichiarante')}.`] : righe);
     },
-    promemoria: [{ it: 'La famiglia anagrafica è quella registrata in anagrafe allo stesso indirizzo, non la parentela: scrivi solo chi risulta nel tuo stato di famiglia.', en: 'The registered household is the one recorded at the registry office at the same address, not your wider family: list only the people on your household record.' }, ...PROMEMORIA_46.slice(0, 2)],
+    promemoria: [{ it: 'La famiglia anagrafica è quella registrata in anagrafe allo stesso indirizzo, non la parentela: scrivi solo chi risulta nel tuo stato di famiglia.', en: 'The registered household is the one recorded at the registry office at the same address, not your wider family: list only the people on your household record.' }, ...PROMEMORIA_46],
   },
   {
     id: 'nascita', file: 'autocertificazione-nascita', pdf: true,
@@ -126,17 +131,17 @@ export const DOCUMENTI: Documento[] = [
       { id: 'f_luogo', label: { it: 'Luogo di nascita del figlio o della figlia', en: 'Child’s place of birth' }, tipo: 'testo', se: (v) => v.chi === 'figlio' },
       { id: 'f_data', label: { it: 'Data di nascita del figlio o della figlia', en: 'Child’s date of birth' }, tipo: 'data', se: (v) => v.chi === 'figlio' }, ...CHIUSURA],
     componi: (v) => art46(v, [v.chi === 'figlio' ? `che in data ${d(v, 'f_data')} a ${x(v, 'f_luogo')} è nato/a il proprio figlio/la propria figlia ${x(v, 'f_nome')}.` : `di essere ${g(v, 'nato', 'nata')} a ${x(v, 'luogo_nascita')} il ${d(v, 'data_nascita')}.`]),
-    promemoria: PROMEMORIA_46,
+    promemoria: [{ it: 'Nato o nata all’estero? Va bene se la nascita è trascritta in un comune italiano; altrimenti, e per chi non è cittadino dell’Unione europea, serve il certificato straniero (vedi le domande più sotto).', en: 'Born abroad? Fine if the birth is recorded in an Italian comune; otherwise, and for non-EU citizens, you need the foreign certificate (see the questions below).' }, ...PROMEMORIA_46],
   },
   {
     id: 'civile', file: 'autocertificazione-stato-civile', pdf: true,
     nome: { it: 'Autocertificazione dello stato civile', en: 'Marital status self-certification' },
-    campi: [...ANAGRAFICA, { id: 'stato', label: { it: 'Stato civile', en: 'Marital status' }, tipo: 'scelta', def: 'libero', opzioni: [
+    campi: [...ANAGRAFICA, { id: 'stato', label: { it: 'Stato civile', en: 'Marital status' }, tipo: 'scelta', aiuto: { it: 'Separato o separata? Sei ancora coniugato fino al divorzio.', en: 'Separated? You are still married until the divorce.' }, opzioni: [
       { v: 'celibe', l: { it: 'Celibe o nubile (mai sposato)', en: 'Never married (celibe / nubile)' } },
       { v: 'coniugato', l: { it: 'Coniugato o coniugata', en: 'Married (coniugato/a)' } },
       { v: 'unito', l: { it: 'Unito o unita civilmente', en: 'In a civil union (unito/a civilmente)' } },
       { v: 'vedovo', l: { it: 'Vedovo o vedova', en: 'Widowed (vedovo/a)' } },
-      { v: 'libero', l: { it: 'Stato libero (dopo divorzio o scioglimento)', en: 'Free status (after divorce or dissolution)' } }] },
+      { v: 'libero', l: { it: 'Divorziato o divorziata, o unione civile sciolta (stato libero)', en: 'Divorced, or civil union ended (stato libero)' } }] },
       { id: 'coniuge', label: { it: 'Nome e cognome del coniuge o dell’unito civilmente', en: 'Spouse’s or civil partner’s full name' }, tipo: 'testo', se: (v) => ['coniugato', 'unito', 'vedovo'].includes(v.stato) },
       { id: 'luogo_m', label: { it: 'Comune del matrimonio o dell’unione', en: 'Town of the marriage or union' }, tipo: 'testo', se: (v) => ['coniugato', 'unito'].includes(v.stato) },
       { id: 'data_m', label: { it: 'Data del matrimonio o dell’unione', en: 'Date of the marriage or union' }, tipo: 'data', se: (v) => ['coniugato', 'unito'].includes(v.stato) }, ...CHIUSURA],
@@ -146,10 +151,11 @@ export const DOCUMENTI: Documento[] = [
         : s === 'coniugato' ? `di essere ${g(v, 'coniugato', 'coniugata')} con ${x(v, 'coniuge')}, matrimonio celebrato a ${x(v, 'luogo_m')} il ${d(v, 'data_m')}.`
           : s === 'unito' ? `di essere ${g(v, 'unito', 'unita')} civilmente con ${x(v, 'coniuge')}, unione costituita a ${x(v, 'luogo_m')} il ${d(v, 'data_m')}.`
             : s === 'vedovo' ? `di essere ${g(v, 'vedovo', 'vedova')} di ${x(v, 'coniuge')}.`
-              : 'di trovarsi in stato libero.';
+              : s === 'libero' ? 'di trovarsi in stato libero.'
+                : `di essere ${VUOTO} (scegli lo stato civile).`;
       return art46(v, [t]);
     },
-    promemoria: [{ it: 'Chi è separato resta coniugato finché non c’è il divorzio: in quel caso scegli «coniugato».', en: 'A separated person stays married until the divorce: choose «married» in that case.' }, ...PROMEMORIA_46.slice(0, 2)],
+    promemoria: [{ it: 'Chi è separato resta coniugato finché non c’è il divorzio: in quel caso scegli «coniugato».', en: 'A separated person stays married until the divorce: choose «married» in that case.' }, ...PROMEMORIA_46],
   },
   {
     id: 'studio', file: 'autocertificazione-titolo-di-studio', pdf: true,
@@ -161,43 +167,43 @@ export const DOCUMENTI: Documento[] = [
       { id: 'anno', label: { it: 'Anno o data del conseguimento', en: 'Year or date awarded' }, tipo: 'testo' },
       { id: 'voto', label: { it: 'Votazione (facoltativa)', en: 'Final mark (optional)' }, tipo: 'testo', facoltativo: true }, ...CHIUSURA],
     componi: (v) => art46(v, [`di aver conseguito il titolo di studio di ${x(v, 'titolo')} presso ${x(v, 'istituto')} di ${x(v, 'sede')}, nell’anno ${x(v, 'anno')}${(v.voto ?? '').trim() ? `, con la votazione di ${v.voto.trim()}` : ''}.`]),
-    promemoria: [{ it: 'Un titolo preso all’estero non si autocertifica come titolo italiano: serve la dichiarazione di valore o l’equipollenza.', en: 'A qualification obtained abroad cannot be self-certified as an Italian one: you need a declaration of value or recognition.' }, ...PROMEMORIA_46.slice(0, 2)],
+    promemoria: [{ it: 'Un titolo preso all’estero non si autocertifica come titolo italiano: prima va riconosciuto in Italia (equipollenza o dichiarazione di valore).', en: 'A qualification obtained abroad cannot be self-certified as an Italian one: it must first be recognised in Italy (equivalence or declaration of value).' }, ...PROMEMORIA_46],
   },
   {
     id: 'reddito', file: 'autocertificazione-reddito', pdf: true,
     nome: { it: 'Autocertificazione del reddito', en: 'Income self-certification' },
     campi: [...ANAGRAFICA,
       { id: 'anno', label: { it: 'Anno dei redditi', en: 'Income year' }, tipo: 'testo', def: '2025' },
-      { id: 'tipo', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', def: 'complessivo', opzioni: [
+      { id: 'tipo', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', opzioni: [
         { v: 'complessivo', l: { it: 'Reddito complessivo', en: 'Total income (reddito complessivo)' } },
         { v: 'imponibile', l: { it: 'Reddito imponibile ai fini IRPEF', en: 'Taxable income for IRPEF' } },
         { v: 'nessuno', l: { it: 'Nessun reddito nell’anno', en: 'No income in the year' } }] },
       { id: 'importo', label: { it: 'Importo in euro', en: 'Amount in euros' }, tipo: 'testo', se: (v) => v.tipo !== 'nessuno', aiuto: { it: 'Come scritto nella dichiarazione, per esempio 18.540,00', en: 'As written in your tax return, for example 18.540,00' } },
-      { id: 'fonte', label: { it: 'Dove si legge', en: 'Where it is shown' }, tipo: 'scelta', def: '730', se: (v) => v.tipo !== 'nessuno', opzioni: [
-        { v: '730', l: { it: 'Modello 730', en: 'Form 730' } }, { v: 'redditi', l: { it: 'Modello Redditi Persone fisiche', en: 'Form Redditi PF' } }, { v: 'cu', l: { it: 'Certificazione Unica', en: 'Certificazione Unica (CU)' } }, { v: 'nessuna', l: { it: 'Non indicarlo', en: 'Do not state it' } }] },
+      { id: 'fonte', label: { it: 'Dove si legge (facoltativo)', en: 'Where it is shown (optional)' }, tipo: 'scelta', def: '', facoltativo: true, se: (v) => v.tipo !== 'nessuno', opzioni: [
+        { v: '', l: { it: 'Non indicarlo', en: 'Do not state it' } }, { v: '730', l: { it: 'Modello 730 (dichiarazione dei redditi)', en: 'Form 730 (tax return)' } }, { v: 'redditi', l: { it: 'Modello Redditi Persone fisiche', en: 'Form Redditi PF' } }, { v: 'cu', l: { it: 'Certificazione Unica (CU, data da datore o ente pensione)', en: 'Certificazione Unica (CU, from employer or pension body)' } }] },
       { id: 'scopo', label: { it: 'Per quale pratica (facoltativo)', en: 'For which procedure (optional)' }, tipo: 'testo', facoltativo: true }, ...CHIUSURA],
     componi: (v) => {
-      const fonte: Record<string, string> = { '730': ', come risulta dal Modello 730', redditi: ', come risulta dal Modello Redditi Persone fisiche', cu: ', come risulta dalla Certificazione Unica', nessuna: '' };
+      const fonte: Record<string, string> = { '730': ', come risulta dal Modello 730', redditi: ', come risulta dal Modello Redditi Persone fisiche', cu: ', come risulta dalla Certificazione Unica' };
       const scopo = (v.scopo ?? '').trim() ? ` La presente dichiarazione è resa ai fini di: ${v.scopo.trim()}.` : '';
       const t = v.tipo === 'nessuno' ? `di non aver percepito redditi nell’anno ${x(v, 'anno')}.${scopo}`
-        : `che il proprio ${v.tipo === 'imponibile' ? 'reddito imponibile ai fini IRPEF' : 'reddito complessivo'} relativo all’anno ${x(v, 'anno')} ammonta a euro ${x(v, 'importo')}${fonte[v.fonte] ?? ''}.${scopo}`;
+        : `che il proprio ${v.tipo === 'imponibile' ? 'reddito imponibile ai fini IRPEF' : v.tipo === 'complessivo' ? 'reddito complessivo' : `${VUOTO} (scegli cosa dichiari)`} relativo all’anno ${x(v, 'anno')} ammonta a euro ${x(v, 'importo')}${fonte[v.fonte] ?? ''}.${scopo}`;
       return art46(v, [t]);
     },
-    promemoria: [{ it: 'Per l’ISEE non basta un’autocertificazione: serve la DSU all’INPS.', en: 'For the ISEE a self-certification is not enough: you file the DSU with INPS.' }, ...PROMEMORIA_46.slice(0, 2)],
+    promemoria: [{ it: 'Per l’ISEE (l’indicatore della situazione economica) questo foglio non basta: serve la dichiarazione all’INPS, la DSU, che si fa al CAF o sul sito dell’INPS.', en: 'For the ISEE (the household means indicator) this sheet is not enough: you file the DSU declaration with INPS, at a CAF tax-assistance centre or on the INPS website.' }, ...PROMEMORIA_46],
   },
   {
     id: 'penale', file: 'autocertificazione-carichi-pendenti', pdf: true,
     nome: { it: 'Autocertificazione di casellario e carichi pendenti', en: 'Criminal record self-certification' },
-    campi: [...ANAGRAFICA, { id: 'cosa', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', def: 'entrambe', opzioni: [
+    campi: [...ANAGRAFICA, { id: 'cosa', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', opzioni: [
       { v: 'entrambe', l: { it: 'Nessuna condanna e nessun procedimento noto', en: 'No convictions and no known proceedings' } },
       { v: 'condanne', l: { it: 'Solo: nessuna condanna (casellario)', en: 'Only: no convictions (criminal record)' } },
       { v: 'carichi', l: { it: 'Solo: nessun procedimento noto (carichi pendenti)', en: 'Only: no known proceedings (pending charges)' } }] }, ...CHIUSURA],
     componi: (v) => {
       const aa = `di non aver riportato condanne penali e di non essere ${g(v, 'destinatario', 'destinataria')} di provvedimenti che riguardano l'applicazione di misure di sicurezza e di misure di prevenzione, di decisioni civili e di provvedimenti amministrativi iscritti nel casellario giudiziale ai sensi della vigente normativa (art. 46, lettera aa);`;
       const bb = `di non essere a conoscenza di essere ${g(v, 'sottoposto', 'sottoposta')} a procedimenti penali (art. 46, lettera bb).`;
-      return art46(v, v.cosa === 'condanne' ? [aa.replace(/;$/, '.')] : v.cosa === 'carichi' ? [bb] : [aa, bb]);
+      return art46(v, v.cosa === 'condanne' ? [aa.replace(/;$/, '.')] : v.cosa === 'carichi' ? [bb] : v.cosa === 'entrambe' ? [aa, bb] : [`${VUOTO} (scegli cosa dichiari)`]);
     },
-    promemoria: [{ it: 'Se hai una condanna, non usare questo testo: la formula «non aver riportato condanne» sarebbe falsa. Chiedi il certificato del casellario.', en: 'If you have a conviction, do not use this text: «no convictions» would be false. Ask for the criminal record certificate instead.' }, ...PROMEMORIA_46.slice(0, 2)],
+    promemoria: [{ it: 'Se hai una condanna, non usare questo testo: la formula «non aver riportato condanne» sarebbe falsa. Chiedi il certificato del casellario.', en: 'If you have a conviction, do not use this text: «no convictions» would be false. Ask for the criminal record certificate instead.' }, ...PROMEMORIA_46],
   },
   {
     id: 'notorieta', file: 'dichiarazione-sostitutiva-atto-di-notorieta', pdf: true,
@@ -232,7 +238,7 @@ export const DOCUMENTI: Documento[] = [
     id: 'testamento', file: 'traccia-testamento-olografo', pdf: false,
     nome: { it: 'Traccia del testamento olografo', en: 'Handwritten will outline' },
     campi: [SESSO, NOME, COGNOME, LUOGO_N, DATA_N,
-      { id: 'modello', label: { it: 'Come dividere', en: 'How to divide' }, tipo: 'scelta', def: 'universale', opzioni: [
+      { id: 'modello', label: { it: 'Come dividere', en: 'How to divide' }, tipo: 'scelta', opzioni: [
         { v: 'universale', l: { it: 'Un solo erede di tutto', en: 'One heir of everything' } },
         { v: 'parti', l: { it: 'Più eredi in parti uguali', en: 'Several heirs in equal shares' } },
         { v: 'legato', l: { it: 'Un bene a una persona, il resto a un erede', en: 'One item to one person, the rest to an heir' } }] },
@@ -241,7 +247,7 @@ export const DOCUMENTI: Documento[] = [
       { id: 'erede3', label: { it: 'Terzo erede (facoltativo)', en: 'Third heir (optional)' }, tipo: 'testo', facoltativo: true, se: (v) => v.modello === 'parti' },
       { id: 'bene', label: { it: 'Bene lasciato (descrizione precisa)', en: 'Item left (precise description)' }, tipo: 'testo', se: (v) => v.modello === 'legato' },
       { id: 'legatario', label: { it: 'A chi va quel bene', en: 'Who receives that item' }, tipo: 'testo', se: (v) => v.modello === 'legato' },
-      { id: 'revoca', label: { it: 'Revocare i testamenti precedenti', en: 'Revoke earlier wills' }, tipo: 'scelta', def: 'si', opzioni: [{ v: 'si', l: { it: 'Sì', en: 'Yes' } }, { v: 'no', l: { it: 'No', en: 'No' } }] },
+      { id: 'revoca', label: { it: 'Revocare i testamenti precedenti', en: 'Revoke earlier wills' }, tipo: 'scelta', opzioni: [{ v: 'si', l: { it: 'Sì', en: 'Yes' } }, { v: 'no', l: { it: 'No', en: 'No' } }] },
       { id: 'luogo_firma', label: { it: 'Luogo', en: 'Place' }, tipo: 'testo' }, DATA_F],
     componi: (v) => {
       const io = `Io ${g(v, 'sottoscritto', 'sottoscritta')} ${x(v, 'nome')} ${x(v, 'cognome')}, ${g(v, 'nato', 'nata')} a ${x(v, 'luogo_nascita')} il ${d(v, 'data_nascita')}, dispongo dei miei beni per il tempo in cui avrò cessato di vivere.`;
@@ -249,13 +255,13 @@ export const DOCUMENTI: Documento[] = [
       const elenco = eredi.length > 1 ? `${eredi.slice(0, -1).join(', ')} e ${eredi[eredi.length - 1]}` : (eredi[0] || VUOTO);
       const disp = v.modello === 'parti' ? `Nomino miei eredi, in parti uguali tra loro, ${elenco}.`
         : v.modello === 'legato' ? `Lascio a ${x(v, 'legatario')} il seguente bene: ${x(v, 'bene')}. Nomino ${x(v, 'erede1')} erede di tutti gli altri miei beni.`
-          : `Nomino ${x(v, 'erede1')} erede universale di tutti i miei beni.`;
+          : v.modello === 'universale' ? `Nomino ${x(v, 'erede1')} erede universale di tutti i miei beni.` : `${VUOTO} (scegli come dividere)`;
       const gg = valida(v.data_firma ?? '') ? dataLunga(v.data_firma) : 'giorno, mese e anno in lettere o in cifre';
       return {
         righe: [
           { t: 'Testamento', b: true, c: true, s: 13 },
           { t: io, gap: 14 },
-          ...(v.revoca !== 'no' ? [{ t: 'Revoco ogni mia precedente disposizione testamentaria.', gap: 6 }] : []),
+          ...(v.revoca === 'si' ? [{ t: 'Revoco ogni mia precedente disposizione testamentaria.', gap: 6 }] : []),
           { t: disp, gap: 6 },
           { t: `${x(v, 'luogo_firma')}, ${gg}`, gap: 18 },
           { t: `${x(v, 'nome')} ${x(v, 'cognome')} (firma)`, r: true, gap: 8 },
@@ -277,7 +283,7 @@ export const DOCUMENTI: Documento[] = [
 
 function deleghe(): Documento[] {
   const delegato: Campo[] = [
-    { id: 'sesso_d', label: { it: 'Persona delegata', en: 'Person you delegate' }, tipo: 'scelta', def: 'M', opzioni: [{ v: 'M', l: { it: 'Uomo (il delegato)', en: 'A man (il delegato)' } }, { v: 'F', l: { it: 'Donna (la delegata)', en: 'A woman (la delegata)' } }] },
+    { id: 'sesso_d', label: { it: 'Persona delegata: uomo o donna?', en: 'Person you delegate: man or woman?' }, tipo: 'scelta', opzioni: [{ v: 'M', l: { it: 'Uomo (il delegato)', en: 'A man (il delegato)' } }, { v: 'F', l: { it: 'Donna (la delegata)', en: 'A woman (la delegata)' } }] },
     { id: 'd_nome', label: { it: 'Nome e cognome del delegato', en: 'Delegate’s full name' }, tipo: 'testo' },
     { id: 'd_nascita', label: { it: 'Luogo e data di nascita del delegato', en: 'Delegate’s place and date of birth' }, tipo: 'testo', aiuto: { it: 'Esempio: Bari, 12/03/1990', en: 'Example: Bari, 12/03/1990' } },
     { id: 'd_doc', label: { it: 'Documento del delegato (tipo e numero)', en: 'Delegate’s ID (type and number)' }, tipo: 'testo', aiuto: { it: 'Esempio: carta d’identità n. CA12345AB', en: 'Example: carta d’identità n. CA12345AB' } },
@@ -315,7 +321,7 @@ function deleghe(): Documento[] {
       id: 'ritiro', file: 'delega-ritiro-documenti', pdf: true,
       nome: { it: 'Delega per il ritiro di documenti', en: 'Delegation to collect documents' },
       campi: [...ANAGRAFICA, ...delegato,
-        { id: 'tipo_ente', label: { it: 'Dove si ritira', en: 'Where it is collected' }, tipo: 'scelta', def: 'comune', opzioni: [
+        { id: 'tipo_ente', label: { it: 'Dove si ritira', en: 'Where it is collected' }, tipo: 'scelta', opzioni: [
           { v: 'comune', l: { it: 'Comune (anagrafe, carta d’identità)', en: 'Comune (registry office, ID card)' } }, { v: 'scuola', l: { it: 'Scuola', en: 'School' } }, { v: 'universita', l: { it: 'Università', en: 'University' } },
           { v: 'posta', l: { it: 'Ufficio postale', en: 'Post office' } }, { v: 'inps', l: { it: 'INPS', en: 'INPS' } }, { v: 'entrate', l: { it: 'Agenzia delle entrate', en: 'Revenue Agency' } }, { v: 'banca', l: { it: 'Banca', en: 'Bank' } }, { v: 'altro', l: { it: 'Altro ufficio', en: 'Other office' } }] },
         { id: 'sede_ente', label: { it: 'Nome o città dell’ufficio', en: 'Name or town of the office' }, tipo: 'testo' },
@@ -338,11 +344,11 @@ function disdettaAffitto(): Documento {
       { id: 'loc_indirizzo', label: { it: 'Indirizzo del proprietario', en: 'Landlord’s address' }, tipo: 'testo' },
       { id: 'data_contratto', label: { it: 'Data del contratto', en: 'Date of the lease' }, tipo: 'data' },
       { id: 'registrazione', label: { it: 'Estremi di registrazione (facoltativi)', en: 'Registration details (optional)' }, tipo: 'testo', facoltativo: true },
-      { id: 'modo', label: { it: 'Perché lasci la casa', en: 'Why you are leaving' }, tipo: 'scelta', def: 'clausola', opzioni: [
+      { id: 'modo', label: { it: 'Perché lasci la casa', en: 'Why you are leaving' }, tipo: 'scelta', opzioni: [
         { v: 'clausola', l: { it: 'Recesso previsto dal contratto', en: 'Notice clause in the lease' } },
         { v: 'gravi', l: { it: 'Gravi motivi (6 mesi, legge 431/1998)', en: 'Serious reasons (6 months, Law 431/1998)' } },
         { v: 'scadenza', l: { it: 'Alla scadenza del contratto', en: 'At the end of the lease term' } }] },
-      { id: 'mesi', label: { it: 'Mesi di preavviso scritti nel contratto', en: 'Months of notice in the lease' }, tipo: 'scelta', def: '6', se: (v) => v.modo === 'clausola', opzioni: ['1', '2', '3', '4', '5', '6'].map((n) => ({ v: n, l: { it: n, en: n } })) },
+      { id: 'mesi', label: { it: 'Mesi di preavviso scritti nel contratto', en: 'Months of notice in the lease' }, tipo: 'scelta', se: (v) => v.modo === 'clausola', opzioni: ['1', '2', '3', '4', '5', '6'].map((n) => ({ v: n, l: { it: n, en: n } })) },
       { id: 'motivi', label: { it: 'Gravi motivi, in breve', en: 'Serious reasons, briefly' }, tipo: 'testo', se: (v) => v.modo === 'gravi', aiuto: { it: 'Esempio: trasferimento di lavoro a Milano dal 1° marzo', en: 'Example: job transfer to Milan from 1 March. In Italian.' } },
       { id: 'scadenza', label: { it: 'Data di scadenza del contratto', en: 'Lease end date' }, tipo: 'data', se: (v) => v.modo === 'scadenza' },
       { id: 'data_firma', label: { it: 'Data di invio della lettera', en: 'Date you send the letter' }, tipo: 'data' }],
@@ -358,6 +364,8 @@ function disdettaAffitto(): Documento {
             ? { tipo: 'attenzione', testo: { it: `Per la scadenza del ${dataIt(v.scadenza)} la lettera doveva arrivare entro il ${dataIt(entro)} (sei mesi prima, art. 2 legge 431/1998): leggi il tuo contratto o usa il recesso.`, en: `For the ${dataIt(v.scadenza)} end date the letter had to arrive by ${dataIt(entro)} (six months before, art. 2 Law 431/1998): check your lease or use the notice clause.` } }
             : { tipo: 'ok', testo: { it: `Deve arrivare al proprietario entro il ${dataIt(entro)}.`, en: `It must reach the landlord by ${dataIt(entro)}.` } });
         } else effetto = 'con effetto dalla scadenza contrattuale';
+      } else if (!v.modo || (v.modo === 'clausola' && !v.mesi)) {
+        effetto = `con preavviso di ${VUOTO}`;
       } else {
         const mesi = v.modo === 'gravi' ? P.recesso_gravi_motivi_mesi : Number(v.mesi) || 6;
         const fine = valida(invio) ? fineRecesso(invio, mesi) : '';
@@ -388,14 +396,14 @@ function disdettaServizio(): Documento {
     id: 'servizio', file: 'lettera-di-disdetta', pdf: true,
     nome: { it: 'Lettera di disdetta di un servizio', en: 'Cancellation letter for a service' },
     campi: [SESSO, NOME, COGNOME, CF, COMUNE, INDIRIZZO,
-      { id: 'tipo', label: { it: 'Che contratto chiudi', en: 'Which contract you are ending' }, tipo: 'scelta', def: 'telefonia', opzioni: [
+      { id: 'tipo', label: { it: 'Che contratto chiudi', en: 'Which contract you are ending' }, tipo: 'scelta', opzioni: [
         { v: 'telefonia', l: { it: 'Telefono, internet o pay TV', en: 'Phone, internet or pay TV' } },
         { v: 'abbonamento', l: { it: 'Palestra, abbonamento o altro servizio', en: 'Gym, subscription or other service' } },
         { v: 'quattordici', l: { it: 'Contratto online o fuori dai negozi (14 giorni)', en: 'Online or doorstep contract (14 days)' } }] },
       { id: 'fornitore', label: { it: 'Fornitore (ragione sociale)', en: 'Provider (company name)' }, tipo: 'testo' },
       { id: 'forn_indirizzo', label: { it: 'Indirizzo o PEC del fornitore', en: 'Provider’s address or PEC' }, tipo: 'testo' },
       { id: 'codice', label: { it: 'Codice cliente o numero di contratto', en: 'Customer or contract number' }, tipo: 'testo' },
-      { id: 'giorni', label: { it: 'Giorni di preavviso scritti nel contratto', en: 'Days of notice in the contract' }, tipo: 'scelta', def: '30', se: (v) => v.tipo !== 'quattordici', opzioni: ['0', '15', '30', '60', '90'].map((n) => ({ v: n, l: { it: n === '0' ? 'Nessuno' : n, en: n === '0' ? 'None' : n } })) },
+      { id: 'giorni', label: { it: 'Giorni di preavviso scritti nel contratto', en: 'Days of notice in the contract' }, tipo: 'scelta', se: (v) => v.tipo !== 'quattordici', opzioni: ['0', '15', '30', '60', '90'].map((n) => ({ v: n, l: { it: n === '0' ? 'Nessuno' : n, en: n === '0' ? 'None' : n } })) },
       { id: 'inizio', label: { it: 'Data del contratto o della consegna', en: 'Date of the contract or delivery' }, tipo: 'data', se: (v) => v.tipo === 'quattordici' },
       DATA_F],
     componi: (v) => {
@@ -410,6 +418,8 @@ function disdettaServizio(): Documento {
             ? { tipo: 'attenzione', testo: { it: `Il termine di ${P.recesso_distanza_giorni} giorni scadeva il ${dataIt(ultimo)}: il recesso senza motivo non è più possibile, resta la disdetta prevista dal contratto.`, en: `The ${P.recesso_distanza_giorni}-day period ended on ${dataIt(ultimo)}: withdrawal without reason is no longer possible, use the contract’s own notice instead.` } }
             : { tipo: 'ok', testo: { it: `Invia la comunicazione entro il ${dataIt(ultimo)} (${P.recesso_distanza_giorni} giorni, art. 52).`, en: `Send it by ${dataIt(ultimo)} (${P.recesso_distanza_giorni} days, art. 52).` } });
         }
+      } else if (!v.tipo || !v.giorni) {
+        corpo = `comunica la disdetta del contratto n. ${x(v, 'codice')} con effetto ${VUOTO}, e chiede la cessazione di ogni addebito da quella data.`;
       } else {
         const chiesti = Number(v.giorni) || 0;
         const giorni = v.tipo === 'telefonia' ? preavvisoTelefonia(chiesti) : chiesti;
@@ -445,12 +455,12 @@ function dimissioni(): Documento {
       { id: 'datore', label: { it: 'Datore di lavoro', en: 'Employer' }, tipo: 'testo' },
       { id: 'inizio', label: { it: 'Data di inizio del rapporto', en: 'Employment start date' }, tipo: 'data' },
       { id: 'ccnl', label: { it: 'Contratto collettivo (CCNL)', en: 'Collective agreement (CCNL)' }, tipo: 'testo', facoltativo: true, aiuto: { it: 'Lo trovi in busta paga', en: 'It is on your payslip' } },
-      { id: 'preavviso', label: { it: 'Giorni di preavviso del tuo CCNL (di calendario)', en: 'Notice days in your CCNL (calendar days)' }, tipo: 'scelta', def: '30', opzioni: ['0', '7', '10', '15', '20', '30', '45', '60', '90', '120'].map((n) => ({ v: n, l: { it: n === '0' ? 'Nessuno (prova)' : n, en: n === '0' ? 'None (probation)' : n } })) },
+      { id: 'preavviso', label: { it: 'Giorni di preavviso del tuo CCNL (di calendario)', en: 'Notice days in your CCNL (calendar days)' }, tipo: 'scelta', opzioni: ['0', '7', '10', '15', '20', '30', '45', '60', '90', '120'].map((n) => ({ v: n, l: { it: n === '0' ? 'Nessuno (prova)' : n, en: n === '0' ? 'None (probation)' : n } })) },
       { id: 'data_firma', label: { it: 'Data in cui invii il modulo', en: 'Date you send the form' }, tipo: 'data' }],
     componi: (v) => {
       const invio = v.data_firma ?? '';
-      const ok = valida(invio);
-      const revoca = ok ? dataIt(revocaEntro(invio)) : '__/__/____';
+      const ok = valida(invio) && v.preavviso !== '' && v.preavviso !== undefined;
+      const revoca = valida(invio) ? dataIt(revocaEntro(invio)) : '__/__/____';
       const ultimo = ok ? dataIt(ultimoGiornoLavoro(invio, Number(v.preavviso) || 0)) : '__/__/____';
       return {
         righe: [
@@ -460,7 +470,7 @@ function dimissioni(): Documento {
           { t: `Datore di lavoro: ${x(v, 'datore')}` }, { t: `Inizio del rapporto: ${d(v, 'inizio')}` }, { t: `CCNL: ${x(v, 'ccnl', 'da verificare in busta paga')}` },
           { t: `Invio del modulo: ${d(v, 'data_firma')}`, b: true, gap: 10 },
           { t: `Revoca possibile fino al: ${revoca} (entro ${P.revoca_dimissioni_giorni} giorni dall’invio, con lo stesso canale)` },
-          { t: `Ultimo giorno di lavoro stimato con ${Number(v.preavviso) || 0} giorni di preavviso: ${ultimo}` },
+          { t: `Ultimo giorno di lavoro stimato con ${v.preavviso ? Number(v.preavviso) : '__'} giorni di preavviso: ${ultimo}` },
           { t: 'Il modulo si invia dal sito del Ministero del lavoro con SPID, CIE o CNS, oppure tramite patronato, sindacato, consulente del lavoro o ente bilaterale (art. 26, comma 4).', gap: 12 },
           { t: 'Una lettera di dimissioni su carta, da sola, non produce effetti (art. 26, comma 1): serve l’invio telematico.', gap: 4 },
         ],
@@ -479,3 +489,5 @@ export function valoriIniziali(doc: Documento, oggi: string): Valori {
   return v;
 }
 export const campiVisibili = (doc: Documento, v: Valori) => doc.campi.filter((c) => !c.se || c.se(v));
+/** Choix obligatoires encore vides (liste sans valeur par défaut) : le PDF et la copie attendent qu'ils soient faits. */
+export const sceltaMancanti = (doc: Documento, v: Valori) => campiVisibili(doc, v).filter((c) => c.tipo === 'scelta' && c.def === undefined && !c.facoltativo && !(v[c.id] ?? ''));

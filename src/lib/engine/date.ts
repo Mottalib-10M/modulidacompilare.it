@@ -18,3 +18,19 @@ export function dataLunga(s: string, lang: 'it' | 'en' = 'it'): string {
   if (!valida(s)) return lang === 'en' ? '(date)' : '(data)';
   return D(s).toLocaleDateString(lang === 'en' ? 'en-GB' : 'it-IT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
+/**
+ * Saisie d'une date à l'italienne (testeurs naïfs du 2026-11-14) : le champ `type="date"` suit la langue
+ * du navigateur, pas celle de la page, et montrait « mm/dd/yyyy » à des Italiens, qui risquaient d'inverser
+ * jour et mois sur une déclaration qui engage pénalement. Le champ est donc un texte gg/mm/aaaa ; on accepte
+ * aussi « 7/4/1965 », « 07-04-1965 », « 07.04.1965 » et les seuls chiffres « 07041965 » (clavier numérique
+ * du téléphone, sans barre oblique). Rend la date ISO, ou '' si elle n'existe pas.
+ */
+export function leggiData(s: string): string {
+  const t = (s ?? '').trim();
+  const m = t.match(/^(\d{1,2})\s*[/.\-\s]\s*(\d{1,2})\s*[/.\-\s]\s*(\d{4})$/) ?? t.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (!m) return '';
+  const [, g, me, a] = m;
+  const out = `${a}-${me.padStart(2, '0')}-${g.padStart(2, '0')}`;
+  const anno = Number(a);
+  return valida(out) && anno >= 1900 && anno <= 2100 ? out : '';
+}

@@ -26,20 +26,21 @@ export const HOME: Record<'it' | 'en', HomeText> = {
 <p>L’articolo ${h.src('art46', '46')} elenca gli stati e i fatti che si possono autocertificare: data e luogo di nascita, residenza, cittadinanza, godimento dei diritti civili e politici, stato civile, stato di famiglia, esistenza in vita, nascita di un figlio o morte di un familiare, iscrizione in albi ed elenchi pubblici, titoli di studio ed esami, qualifiche professionali, situazione reddituale, codice fiscale e partita IVA, disoccupazione, pensione, qualità di studente, rappresentanza legale, obblighi militari, assenza di condanne e di procedimenti penali noti, vivenza a carico, dati dello stato civile. Tutto ciò che resta fuori dalla lista, purché tu lo conosca direttamente, passa per la dichiarazione sostitutiva dell’atto di notorietà (articolo ${h.src('art47', '47')}).</p>
 <h2>I moduli del sito, uno per ogni pratica</h2>
 <p>Ogni pagina del sito apre lo stesso generatore già impostato sul documento giusto, con le formule di legge che quel documento richiede e nient’altro. Qui sopra puoi scegliere fra tutti.</p>
-${h.table(['Modulo', 'Base di legge', 'Quando serve'], [
-  [h.a('autocertificazione-residenza', 'Residenza'), 'art. 46, lett. b', 'iscrizione a scuola, bonus, pratiche comunali'],
-  [h.a('autocertificazione-stato-di-famiglia', 'Stato di famiglia'), 'art. 46, lett. f', 'assegni, agevolazioni, domande di alloggio'],
-  [h.a('autocertificazione-nascita', 'Nascita'), 'art. 46, lett. a e h', 'concorsi, iscrizioni, nascita di un figlio'],
-  [h.a('autocertificazione-stato-civile', 'Stato civile'), 'art. 46, lett. e', 'pratiche di successione, pensione di reversibilità'],
-  [h.a('autocertificazione-titolo-di-studio', 'Titolo di studio'), 'art. 46, lett. m', 'concorsi pubblici, graduatorie'],
-  [h.a('autocertificazione-reddito', 'Reddito'), 'art. 46, lett. o', 'esenzioni, tariffe agevolate, borse'],
-  [h.a('autocertificazione-carichi-pendenti', 'Casellario e carichi pendenti'), 'art. 46, lett. aa e bb', 'concorsi, albi, gare'],
-  [h.a('dichiarazione-sostitutiva-atto-di-notorieta', 'Atto di notorietà'), 'art. 47', 'smarrimento di documenti, fatti non in elenco'],
-  [h.a('delega-generica', 'Delega generica'), 'art. 38, comma 3-bis', 'presentare o ritirare per conto di altri'],
-  [h.a('disdetta-contratto-affitto', 'Disdetta dell’affitto'), 'legge 431/1998', 'lasciare la casa in locazione'],
-], 'I moduli più usati e la norma che li regge (DPR 445/2000 salvo indicazione)', ['l', 'l', 'l'])}
+${h.table(['Modulo (tocca per compilarlo)', 'Quando serve'], [
+  [h.a('autocertificazione-residenza', 'Residenza →'), 'iscrizione a scuola, bonus, pratiche comunali'],
+  [h.a('autocertificazione-stato-di-famiglia', 'Stato di famiglia →'), 'assegni, agevolazioni, domande di alloggio'],
+  [h.a('autocertificazione-nascita', 'Nascita →'), 'concorsi, iscrizioni, nascita di un figlio'],
+  [h.a('autocertificazione-stato-civile', 'Stato civile →'), 'pratiche di successione, pensione di reversibilità'],
+  [h.a('autocertificazione-titolo-di-studio', 'Titolo di studio →'), 'concorsi pubblici, graduatorie'],
+  [h.a('autocertificazione-reddito', 'Reddito →'), 'esenzioni, tariffe agevolate, borse'],
+  [h.a('autocertificazione-carichi-pendenti', 'Casellario e carichi pendenti →'), 'concorsi, albi, gare'],
+  [h.a('dichiarazione-sostitutiva-atto-di-notorieta', 'Atto di notorietà →'), 'smarrimento di documenti, fatti non in elenco'],
+  [h.a('delega-generica', 'Delega generica →'), 'presentare o ritirare per conto di altri'],
+  [h.a('disdetta-contratto-affitto', 'Disdetta dell’affitto →'), 'lasciare la casa in locazione'],
+], 'I moduli più usati e quando servono', ['l', 'l'])}
+<p class="text-sm">Norme: articolo 46 del DPR 445/2000 per le autocertificazioni, articolo 47 per l’atto di notorietà, articolo 38 per la delega, legge 431/1998 per la disdetta dell’affitto.</p>
 <h2>Come si firma e come si consegna l’autocertificazione</h2>
-<p>Il modulo si firma a mano, con la penna, dopo averlo stampato. Se lo consegni di persona puoi firmarlo davanti all’impiegato; se lo mandi per posta, e-mail, PEC o lo lasci a un incaricato, alleghi la copia fotostatica, non autenticata, di un documento d’identità (${h.src('art38', 'articolo 38')}, comma 3). Le dichiarazioni inviate per via telematica valgono anche se firmate digitalmente o trasmesse dopo l’accesso con SPID, CIE o CNS, come prevede l’articolo 65 del Codice dell’amministrazione digitale richiamato dallo stesso articolo 38. Molti uffici pubblicano un proprio modulo: puoi usarlo, ma non sei obbligato, purché la tua dichiarazione contenga gli stessi dati (articolo 48).</p>
+<p>Il modulo si firma a mano, con la penna, dopo averlo stampato. Se lo consegni di persona puoi firmarlo davanti all’impiegato; se lo mandi per posta, per e-mail o per posta elettronica certificata (PEC), o lo lasci a un incaricato, alleghi la copia fotostatica, non autenticata, di un documento d’identità (${h.src('art38', 'articolo 38')}, comma 3). Le dichiarazioni inviate per via telematica valgono anche se firmate digitalmente o trasmesse dopo l’accesso con SPID, carta d’identità elettronica (CIE) o carta nazionale dei servizi (CNS), le identità digitali per i siti pubblici (articolo 65 del Codice dell’amministrazione digitale). Molti uffici pubblicano un proprio modulo: puoi usarlo, ma non sei obbligato, purché la tua dichiarazione contenga gli stessi dati (articolo 48).</p>
 <h2>Autocertificazione o atto di notorietà: la differenza</h2>
 <p>L’autocertificazione dell’articolo 46 riguarda dati che risultano già in un registro pubblico: l’ufficio li può verificare con un controllo negli archivi del comune, dell’università o del casellario. L’atto di notorietà dell’articolo 47 copre il resto: fatti che conosci direttamente e che nessun registro custodisce, come lo smarrimento di un documento, la composizione di un’eredità, il fatto che un familiare viva a tuo carico in un certo modo. Per l’atto di notorietà la copia del documento d’identità è sempre richiesta, salvo firma davanti all’impiegato. Puoi dichiarare anche fatti che riguardano altre persone, se li conosci di persona e se la dichiarazione è nel tuo interesse.</p>
 <h2>Bollo, durata e controlli</h2>
@@ -70,18 +71,19 @@ ${h.table(['Modulo', 'Base di legge', 'Quando serve'], [
 <p>Article ${h.src('art46', '46')} lists what can be self-certified: date and place of birth, residence, citizenship, civil and political rights, marital status, household, being alive, the birth of a child or the death of a relative, entries in public registers and professional rolls, qualifications and exams, professional titles, income, tax code and VAT number, unemployment, pension, student status, legal representation, military service, no criminal convictions and no known proceedings, dependants, civil-status records. Anything else you know first-hand goes through the sworn substitute declaration of article ${h.src('art47', '47')}.</p>
 <h2>The forms on this site, one for each errand</h2>
 <p>Every page opens the same generator already set to the right document, with the legal wording that document needs and nothing more. You can pick any of them in the box above.</p>
-${h.table(['Form', 'Legal basis', 'Typical use'], [
-  [h.a('autocertificazione-residenza', 'Residence'), 'art. 46(b)', 'school enrolment, benefits, town-hall errands'],
-  [h.a('autocertificazione-stato-di-famiglia', 'Household (stato di famiglia)'), 'art. 46(f)', 'allowances, reliefs, housing applications'],
-  [h.a('autocertificazione-nascita', 'Birth'), 'art. 46(a) and (h)', 'public exams, enrolment, a child’s birth'],
-  [h.a('autocertificazione-stato-civile', 'Marital status'), 'art. 46(e)', 'inheritance, survivor’s pension'],
-  [h.a('autocertificazione-titolo-di-studio', 'Education'), 'art. 46(m)', 'public competitions, rankings'],
-  [h.a('autocertificazione-reddito', 'Income'), 'art. 46(o)', 'exemptions, reduced fees, grants'],
-  [h.a('autocertificazione-carichi-pendenti', 'Criminal record'), 'art. 46(aa) and (bb)', 'competitions, registers, tenders'],
-  [h.a('dichiarazione-sostitutiva-atto-di-notorieta', 'Sworn declaration'), 'art. 47', 'lost documents, facts not on the list'],
-  [h.a('delega-generica', 'General delegation'), 'art. 38(3-bis)', 'filing or collecting on someone’s behalf'],
-  [h.a('disdetta-contratto-affitto', 'Lease termination'), 'Law 431/1998', 'leaving a rented home'],
-], 'The most used forms and the rule behind each (DPR 445/2000 unless stated)', ['l', 'l', 'l'])}
+${h.table(['Form (tap to fill it in)', 'Typical use'], [
+  [h.a('autocertificazione-residenza', 'Residence →'), 'school enrolment, benefits, town-hall errands'],
+  [h.a('autocertificazione-stato-di-famiglia', 'Household (stato di famiglia) →'), 'allowances, reliefs, housing applications'],
+  [h.a('autocertificazione-nascita', 'Birth →'), 'public exams, enrolment, a child’s birth'],
+  [h.a('autocertificazione-stato-civile', 'Marital status →'), 'inheritance, survivor’s pension'],
+  [h.a('autocertificazione-titolo-di-studio', 'Education →'), 'public competitions, rankings'],
+  [h.a('autocertificazione-reddito', 'Income →'), 'exemptions, reduced fees, grants'],
+  [h.a('autocertificazione-carichi-pendenti', 'Criminal record →'), 'competitions, registers, tenders'],
+  [h.a('dichiarazione-sostitutiva-atto-di-notorieta', 'Sworn declaration →'), 'lost documents, facts not on the list'],
+  [h.a('delega-generica', 'General delegation →'), 'filing or collecting on someone’s behalf'],
+  [h.a('disdetta-contratto-affitto', 'Lease termination →'), 'leaving a rented home'],
+], 'The most used forms and when you need them', ['l', 'l'])}
+<p class="text-sm">Rules: article 46 of DPR 445/2000 for self-certifications, article 47 for the sworn declaration, article 38 for the delegation, Law 431/1998 for the lease termination.</p>
 <h2>How to sign and hand in an autocertificazione</h2>
 <p>Print the form and sign it in pen. Handing it over in person, you may sign in front of the clerk; sending it by post, e-mail or PEC, or through someone else, you attach a plain photocopy of an identity document (${h.src('art38', 'article 38')}, para. 3). Online submissions are valid when signed digitally or sent after logging in with SPID, CIE or CNS, under article 65 of the Digital Administration Code that article 38 refers to. Many offices publish their own form: you may use it but you are not obliged to, as long as your declaration carries the same information (article 48).</p>
 <h2>Self-certification or sworn declaration: the difference</h2>

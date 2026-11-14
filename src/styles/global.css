@@ -120,3 +120,11 @@ p[id$="-help"]:not([role="status"]), [data-fixe], [data-actuellement], [aria-liv
   [aria-live] table tr:has(> td + td) { border-top: 1px solid var(--color-navy-200); padding: .3rem 0; }
   [aria-live] table tr > td + td { flex: 1 1 100%; padding-top: .1rem; text-align: left; font-weight: 600; }
 }
+/* Sections repliées sous le générateur (lib/sezioni.ts, testeurs naïfs du 2026-11-14). */
+.prose details.sezione { border-top: 1px solid var(--color-navy-200); }
+.prose details.sezione > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; list-style: none; padding: .9rem 0; }
+.prose details.sezione > summary::-webkit-details-marker { display: none; }
+.prose details.sezione > summary::after { content: ''; flex-shrink: 0; width: .6rem; height: .6rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); color: var(--color-navy-500); transition: transform .15s; }
+.prose details.sezione[open] > summary::after { transform: rotate(-135deg); }
+.prose details.sezione > summary h2 { margin: 0; padding: 0; border: none; font-size: 1.2em; }
+.prose details.sezione > :not(summary):first-of-type { margin-top: .4em; }

@@ -9,9 +9,10 @@ import Generatore from './doc/Generatore';
 import Clamp from './Clamp.astro';
 import { HOME } from '../content/home';
 import { route, type Locale } from '../i18n/routes';
-import { navCategories } from '../i18n/nav';
+import { navCategories, label } from '../i18n/nav';
 import { t } from '../i18n/ui';
 import { helpers } from '../lib/helpers';
+import { replieSezioni } from '../lib/sezioni';
 import { P } from '../lib/engine/params';
 import type { SourceKey } from '../lib/engine/params';
 import { AUTHOR_NAME, LAST_UPDATED } from '../data/site-config';
@@ -29,6 +30,7 @@ const sources = keys.map((k) => ({ name: P.sources[k].label[lang], url: P.source
 const jsonLd = [websiteSchema(lang), organizationSchema(lang), webPageSchema({ name: x.h1, description: x.description, path, lang }), webApplicationSchema({ name: x.h1, description: x.description, path, lang }), faqSchema(faqs, lang)];
 const it = lang === 'it';
 const cats = navCategories(lang);
+const scorciatoie = ['autocertificazione-residenza', 'autocertificazione-stato-di-famiglia', 'autocertificazione-reddito', 'delega-generica', 'disdetta-contratto-affitto'];
 ---
 <PageLayout title={x.title} description={x.description} lang={lang} jsonLd={jsonLd} faqs={faqs} sources={sources}>
   <header class="mb-3">
@@ -36,10 +38,15 @@ const cats = navCategories(lang);
     <p class="mt-2 text-base text-navy-700 max-sm:text-[0.95rem] sm:text-lg">{x.intro}</p>
     <p data-chrome class="mt-2 text-sm text-navy-600">{ui.independent}</p>
   </header>
+  <nav data-chrome aria-label={it ? 'Moduli più cercati' : 'Most wanted forms'} class="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
+    <span class="text-navy-700">{it ? 'Vai diretto:' : 'Go straight to:'}</span>
+    {scorciatoie.map((id) => <a href={route(id, lang)} class="rounded-full border border-navy-200 px-2.5 py-0.5 text-accent-800 hover:bg-accent-50">{label(id, lang)}</a>)}
+    <a href="#tutti-i-moduli" class="px-1 text-accent-800 underline">{it ? 'tutti i moduli ↓' : 'all forms ↓'}</a>
+  </nav>
   <div data-outil data-chrome><Generatore client:load lang={lang} id="home" doc="residenza" scelta methodHref={route('method', lang)} /></div>
   <Clamp text={resume} lang={lang} id="clamp-home" sentences={2} class="mt-4" />
   <p class="mt-3 text-sm text-navy-600">{it ? 'Di' : 'By'} <a href={route('about', lang)} class="underline">{AUTHOR_NAME}</a> · <a href={route('method', lang)} class="underline">{it ? 'Metodo e fonti' : 'Method and sources'}</a> · {ui.updatedOn} <time datetime={LAST_UPDATED}>{H.date(LAST_UPDATED)}</time> · <a href={P.sources.dpr445.url} target="_blank" rel="nofollow noopener noreferrer" class="underline">{it ? 'Testo del DPR 445/2000 su Normattiva' : 'Text of DPR 445/2000 on Normattiva'}</a></p>
-  <nav data-chrome aria-label={it ? 'Tutti i moduli' : 'All forms'} class="mt-8 grid gap-3 sm:grid-cols-3">
+  <nav id="tutti-i-moduli" data-chrome aria-label={it ? 'Tutti i moduli' : 'All forms'} class="mt-8 grid gap-3 sm:grid-cols-3">
     {cats.map((c) => (
       <div class="border-t-2 border-accent-500 pt-3">
         <p class="font-semibold text-navy-900">{c.label}</p>
@@ -47,7 +54,8 @@ const cats = navCategories(lang);
       </div>
     ))}
   </nav>
-  <div class="prose prose-slate mt-8 max-w-none">
-    <Fragment set:html={x.body(H)} />
+  <p data-chrome class="mt-8 text-sm text-navy-600">{it ? 'Le spiegazioni sono divise per domanda: tocca un titolo per leggerla.' : 'The explanations are split by question: tap a heading to read it.'}</p>
+  <div class="prose prose-slate mt-2 max-w-none">
+    <Fragment set:html={replieSezioni(x.body(H))} />
   </div>
 </PageLayout>

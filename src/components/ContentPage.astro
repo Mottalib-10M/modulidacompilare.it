@@ -14,6 +14,7 @@ import { label } from '../i18n/nav';
 import { t } from '../i18n/ui';
 import { pageById } from '../lib/guides';
 import { helpers } from '../lib/helpers';
+import { replieSezioni } from '../lib/sezioni';
 import { P } from '../lib/engine/params';
 import { articleSchema, faqSchema, breadcrumbSchema, webPageSchema, webApplicationSchema } from '../lib/seo';
 import { AUTHOR_NAME } from '../data/site-config';
@@ -24,7 +25,7 @@ const x = page[lang];
 const ui = t(lang);
 const path = route(page.id, lang);
 const H = helpers(lang);
-const parts = x.body(H).split(/<!--mini:([A-Za-z0-9_]+)-->/);
+const parts = replieSezioni(x.body(H)).split(/<!--mini:([A-Za-z0-9_]+)-->/);
 const resume = x.resume(H);
 const faqs = x.faqs(H);
 const jsonLd = [articleSchema({ title: x.h1, description: x.description, path, lang }), webPageSchema({ name: x.h1, description: x.description, path, lang }), breadcrumbSchema([{ name: ui.breadcrumbHome, path: route('home', lang) }, { name: x.nav, path }]), webApplicationSchema({ name: x.h1, description: x.description, path, lang })];
@@ -45,6 +46,7 @@ const methodHref = route('method', lang);
     </div>
     <Clamp text={resume} lang={lang} id={`clamp-${page.id}`} class="mb-4 mt-3" />
     <p class="mb-10 text-sm text-navy-600">{ui.reviewedBy} <a href={route('about', lang)} class="underline hover:text-navy-900">{AUTHOR_NAME}</a> · <a href={route('editorial', lang)} class="underline hover:text-navy-900">{ui.editorialPolicy}</a> · <a href={methodHref} class="underline hover:text-navy-900">{label('method', lang)}</a></p>
+    <p data-chrome class="mb-2 text-sm text-navy-600">{lang === 'it' ? 'Le spiegazioni sono divise per domanda: tocca un titolo per leggerla.' : 'The explanations are split by question: tap a heading to read it.'}</p>
     <div class="prose prose-slate max-w-none">
       {parts.map((p, i) => i % 2 === 0 ? <Fragment set:html={p} /> : <div class="mini-bloc" data-simulateur-secondaire><MiniSim client:load kind={p} lang={lang} /></div>)}
     </div>
