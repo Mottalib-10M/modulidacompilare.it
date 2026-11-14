@@ -1,0 +1,128 @@
+
+> modulidacompilare.it@0.1.0 check
+> npm run build && npx vitest run && node scripts/typo-nbsp.mjs dist --check && node scripts/check-legal.mjs && python3 scripts/check-seo.py . && python3 scripts/check-unique.py . && python3 scripts/check-trame.py . && python3 scripts/check-liens.py . && node scripts/check-layout.mjs . && node scripts/check-sources.mjs . && python3 scripts/check-simulateurs.py . && python3 scripts/check-hreflang.py . && python3 scripts/check-anglais.py . && python3 scripts/check-portefeuille.py . && python3 scripts/check-cookies.py . && node scripts/check-url-propre.mjs . && node scripts/check-premier-ecran.mjs . && node scripts/check-droits.mjs . && node scripts/check-copie.mjs . && node scripts/check-nombres.mjs . && node scripts/check-contraste.mjs . && node scripts/check-saisie.mjs . && python3 scripts/check-regles.py . && python3 scripts/check-motcle.py .
+
+
+> modulidacompilare.it@0.1.0 build
+> astro build && node scripts/typo-nbsp.mjs && python3 scripts/check-snippets.py dist
+
+17:47:18 [types] Generated 112ms
+17:47:18 [build] output: "static"
+17:47:18 [build] mode: "static"
+17:47:18 [build] directory: /Users/mottalib/Documents/GitHub/a-publier/Mottalib-10M/modulidacompilare.it/dist/
+17:47:18 [build] Collecting build info...
+17:47:18 [build] ✓ Completed in 130ms.
+17:47:18 [build] Building static entrypoints...
+17:47:19 [vite] ✓ built in 1.28s
+17:47:20 [vite] ✓ built in 631ms
+17:47:20 [build] Rearranging server assets...
+
+ generating static routes 
+17:47:20   ├─ /404.html (+10ms) 
+17:47:20   ├─ /embed/modulo-autocertificazione/index.html (+20ms) 
+17:47:20   ├─ /embed/self-certification-form/index.html (+9ms) 
+17:47:20   ├─ /en/about/index.html (+11ms) 
+17:47:20   ├─ /en/contact/index.html (+7ms) 
+17:47:20   ├─ /en/cookies/index.html (+7ms) 
+17:47:20   ├─ /en/editorial-policy/index.html (+4ms) 
+17:47:20   ├─ /en/legal-notice/index.html (+4ms) 
+17:47:20   ├─ /en/method/index.html (+7ms) 
+17:47:20   ├─ /en/privacy/index.html (+4ms) 
+17:47:20   ├─ /en/widget/index.html (+3ms) 
+17:47:20   ├─ /en/self-certification-of-residence/index.html (+13ms) 
+17:47:20   ├─ /en/family-status-self-certification/index.html (+6ms) 
+17:47:20   ├─ /en/birth-self-certification/index.html (+5ms) 
+17:47:20   ├─ /en/marital-status-self-certification/index.html (+4ms) 
+17:47:20   ├─ /en/education-qualification-self-certification/index.html (+4ms) 
+17:47:20   ├─ /en/income-self-certification/index.html (+3ms) 
+17:47:20   ├─ /en/criminal-record-self-certification/index.html (+5ms) 
+17:47:20   ├─ /en/sworn-substitute-declaration/index.html (+4ms) 
+17:47:20   ├─ /en/italian-delegation-letter/index.html (+4ms) 
+17:47:20   ├─ /en/delegation-to-collect-documents/index.html (+6ms) 
+17:47:20   ├─ /en/handwritten-will-italy/index.html (+6ms) 
+17:47:20   ├─ /en/italian-lease-termination-letter/index.html (+4ms) 
+17:47:20   ├─ /en/italian-cancellation-letter/index.html (+4ms) 
+17:47:20   ├─ /en/resignation-online-italy/index.html (+3ms) 
+17:47:20   ├─ /en/index.html (+6ms) 
+17:47:20   ├─ /it/chi-siamo/index.html (+3ms) 
+17:47:20   ├─ /it/contatti/index.html (+2ms) 
+17:47:20   ├─ /it/cookie/index.html (+2ms) 
+17:47:20   ├─ /it/metodo/index.html (+2ms) 
+17:47:20   ├─ /it/note-legali/index.html (+2ms) 
+17:47:20   ├─ /it/politica-editoriale/index.html (+2ms) 
+17:47:20   ├─ /it/privacy/index.html (+2ms) 
+17:47:20   ├─ /it/widget/index.html (+3ms) 
+17:47:20   ├─ /it/autocertificazione-residenza/index.html (+3ms) 
+17:47:20   ├─ /it/autocertificazione-stato-di-famiglia/index.html (+3ms) 
+17:47:20   ├─ /it/autocertificazione-nascita/index.html (+3ms) 
+17:47:20   ├─ /it/autocertificazione-stato-civile/index.html (+3ms) 
+17:47:20   ├─ /it/autocertificazione-titolo-di-studio/index.html (+4ms) 
+17:47:20   ├─ /it/autocertificazione-reddito/index.html (+4ms) 
+17:47:20   ├─ /it/autocertificazione-carichi-pendenti/index.html (+4ms) 
+17:47:20   ├─ /it/dichiarazione-sostitutiva-atto-di-notorieta/index.html (+4ms) 
+17:47:20   ├─ /it/delega-generica/index.html (+3ms) 
+17:47:20   ├─ /it/delega-ritiro-documenti/index.html (+4ms) 
+17:47:20   ├─ /it/testamento-olografo/index.html (+4ms) 
+17:47:20   ├─ /it/disdetta-contratto-affitto/index.html (+3ms) 
+17:47:20   ├─ /it/lettera-di-disdetta/index.html (+4ms) 
+17:47:20   ├─ /it/dimissioni-online/index.html (+3ms) 
+17:47:20   ├─ /it/index.html (+4ms) 
+17:47:20   ├─ /llms.txt (+2ms) 
+17:47:20   ├─ /index.html (+5ms) 
+17:47:20 ✓ Completed in 286ms.
+
+17:47:20 [build] ✓ Completed in 2.24s.
+17:47:20 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+17:47:20 [build] 50 page(s) built in 2.41s
+17:47:20 [build] Complete!
+typo-nbsp: 0 espace(s) rendue(s) insécable(s) dans 0 page(s)
+check-snippets : 34 pages indexables, titres 50-60, descriptions 150-160, ordre des mots et unicite conformes
+
+ RUN  v4.1.12 /Users/mottalib/Documents/GitHub/a-publier/Mottalib-10M/modulidacompilare.it
+
+
+ Test Files  4 passed (4)
+      Tests  82 passed (82)
+   Start at  17:47:22
+   Duration  540ms (transform 638ms, setup 0ms, import 818ms, tests 150ms, environment 0ms)
+
+typo-nbsp: 0 espace(s) à corriger dans 0 page(s)
+typo-nbsp: 0 décimale(s) avec un point dans une langue à virgule
+typo-nbsp: 0 pourcentage(s) écrit(s) mal placé(s) : « 20 % » là où la langue écrit « 20% », ou après le nombre en turc, qui écrit « %20 » (souvent dans un composant React : corriger la source)
+typo-nbsp: 0 mot(s) français sans accent ou avec un accent faux
+Identité légale complète, aucune mention provisoire.
+!! /en/income-self-certification/                       T 56 D159 W 1400 guide    aucun bloc ≥120 mots dans les 30 premiers % (§21)
+!! /it/autocertificazione-reddito/                      T 55 D160 W 1398 guide    aucun bloc ≥120 mots dans les 30 premiers % (§21)
+. : 34 pages indexables, 2 à corriger
+
+. : 34 pages comparées, 0 paire(s) trop proches, 0 question(s) recyclée(s)
+
+. : 49 pages, 0 à corriger, 0 question(s) de FAQ recyclée(s)
+. : 53 pages, 0 cible(s) morte(s), 0 lien(s) a corriger, 0 route(s) vide(s)
+check-layout: 34 pages × 4 largeurs, 0 défaut(s)
+check-sources: 22 source(s), 0 morte(s), 0 injoignable(s), 0 bloquée(s) aux robots
+. : 30 page(s) de contenu, 0 sans simulateur
+. : 34 pages, 34 avec hreflang, 0 à corriger
+. : 17 page(s) en langue locale, 0 sans version anglaise
+check-portefeuille : 0 paragraphe(s) copiés, 0 site(s) du portefeuille liés, 60 sites comparés.
+check-cookies : 0 défaut (51 pages, Clarity sur 47, GA4 G-SL6QZVH9S9 sur 47, langues en, it)
+check-url-propre: 34 page(s) du sitemap, 0 défaut(s)
+check-premier-ecran : 0 page(s) fautive(s) sur 30 page(s) à simulateur (34 pages lues)
+check-droits : 49 page(s) lues dans dist ; licences citées : aucune ; workflow planifié : non
+  (a) liens soumis à autorisation (citer l’organisme sans lien : titre, adresse en texte, date) : 0
+  (b) relais juridique présenté comme officiel (lien vers le texte officiel, ou « relais non officiel ») : 0
+  (c) copie web.archive.org présentée comme officielle (écrire « copie archivée du JJ/MM/AAAA ») : 0
+  (d) attribution de licence absente du pied de page : 0
+  (e) promesse de mise à jour sans workflow planifié (écrire « lu le JJ/MM/AAAA, mise à jour manuelle ») : 0
+check-droits : 0 défaut
+check-copie : sans objet (pas de data/textes-sources/*.txt)
+  34 page(s), 0 champ(s) mal formaté(s)
+check-contraste: 34 page(s), 0 texte(s) sous le seuil
+check-saisie: 20 page(s) à calculateur, 0 défaut(s)
+  trame        ok         site le plus proche : usgoldkarat.com (33 % de blocs en commun)
+  chiffres     ok         date de mise à jour visible · 1 source(s) officielle(s) liée(s)
+  credibilite  ok         À propos lié · méthode liée
+  reseau       ok         liens vers : aucun site du portefeuille
+  publicite    ok         0 emplacement(s) publicitaire(s) sur l’accueil
+check-regles : 292 accueils comparés, 0 règle(s) KO ou à revoir
+check-motcle : 0/31 page(s) où le terme-clé du titre manque {}

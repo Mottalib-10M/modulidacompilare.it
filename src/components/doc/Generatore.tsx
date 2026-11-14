@@ -20,7 +20,7 @@ const oggiRoma = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome
  * `lang` de la page. Ici un champ texte gg/mm/aaaa : ce qu'on tape n'est jamais réécrit pendant la frappe
  * (check-saisie), la forme 07/04/1965 n'est posée qu'en quittant le champ. La valeur gardée reste ISO.
  */
-function DataField({ id, label, value, onChange, lang, help }: { id: string; label: string; value: string; onChange: (iso: string) => void; lang: Lingua; help?: string }) {
+function DataField({ id, label, value, onChange, lang, help, esempio }: { id: string; label: string; value: string; onChange: (iso: string) => void; lang: Lingua; help?: string; esempio?: boolean }) {
   const [testo, setTesto] = useState(() => (valida(value) ? dataIt(value) : ''));
   const [uscito, setUscito] = useState(false);
   const ultimo = useRef(value);
@@ -30,7 +30,8 @@ function DataField({ id, label, value, onChange, lang, help }: { id: string; lab
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
   const errata = uscito && testo.trim() !== '' && !leggiData(testo);
-  const aiuto = T(lang, 'Giorno/mese/anno, per esempio 07/04/1965 (o solo le cifre: 07041965)', 'Day/month/year, for example 07/04/1965 (or just the digits: 07041965)');
+  // L'exemple ne s'écrit qu'une fois, sous la première date à taper (2e tour : répété sous chaque date, même sous la date de signature déjà remplie).
+  const aiuto = esempio ? T(lang, 'Giorno/mese/anno, per esempio 07/04/1965 (o solo le cifre: 07041965)', 'Day/month/year, for example 07/04/1965 (or just the digits: 07041965)') : undefined;
   return (
     <div className="grid grid-rows-subgrid row-span-3 content-start gap-y-0">
       <label htmlFor={id} className="mb-1 block text-sm font-medium text-navy-700">{label}</label>
@@ -39,6 +40,28 @@ function DataField({ id, label, value, onChange, lang, help }: { id: string; lab
         onBlur={() => { setUscito(true); const iso = leggiData(testo); if (iso) setTesto(dataIt(iso)); }}
         aria-invalid={errata || undefined} aria-describedby={`${id}-help`} className={`${BASE} h-12 ${errata ? 'border-red-600' : ''}`} />
       <div id={`${id}-help`} className={`mt-1 text-xs ${errata ? 'font-medium text-red-700' : 'text-navy-500'}`}>{errata ? T(lang, 'Data non valida: scrivi giorno/mese/anno, per esempio 07/04/1965', 'Invalid date: write day/month/year, for example 07/04/1965') : [help, aiuto].filter(Boolean).join(' · ')}</div>
+    </div>
+  );
+}
+
+/**
+ * Choix en boutons radio visibles (testeurs naïfs, 2e tour du 2026-11-14) : une liste « Scegli… » cachait ses choix.
+ * Aucun bouton coché au départ quand le choix engage ; le `<select>` reste pour les longues listes (plus de 6 choix).
+ */
+function SceltaRadio({ id, label, value, onChange, options, help, manca, lang }: { id: string; label: string; value: string; onChange: (v: string) => void; options: Array<{ value: string; label: string }>; help?: string; manca?: boolean; lang: Lingua }) {
+  const corti = options.every((o) => o.label.length <= 16);
+  return (
+    <div id={id} tabIndex={-1} role="radiogroup" aria-labelledby={`${id}-label`} aria-describedby={help || manca ? `${id}-help` : undefined} aria-invalid={manca || undefined} className="grid grid-rows-subgrid row-span-3 content-start gap-y-0 focus:outline-none">
+      <span id={`${id}-label`} className="mb-1 block text-sm font-medium text-navy-700">{label}</span>
+      <div className={corti ? 'flex flex-wrap gap-2' : 'grid gap-2'}>
+        {options.map((o) => (
+          <label key={o.value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border bg-white px-3 py-2 text-[0.95rem] leading-snug text-navy-900 has-[:checked]:border-accent-600 has-[:checked]:bg-accent-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent-500/40 ${corti ? 'min-w-12 justify-center' : ''} ${manca ? 'border-red-600' : 'border-navy-300'}`}>
+            <input type="radio" name={id} value={o.value} checked={value === o.value} onChange={() => onChange(o.value)} className="h-5 w-5 shrink-0 accent-accent-700" />
+            <span className="[overflow-wrap:anywhere]">{o.label}</span>
+          </label>
+        ))}
+      </div>
+      {(help || manca) && <p id={`${id}-help`} className={`mt-1 text-xs ${manca ? 'font-medium text-red-700' : 'text-navy-500'}`}>{manca ? T(lang, 'Manca questa risposta: tocca una delle scelte.', 'This answer is missing: tap one of the choices.') : help}</p>}
     </div>
   );
 }
@@ -74,12 +97,31 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
     });
     setDocId(nuovo); setCopiato(false);
   };
+  // Bouton « Scarica il PDF » collé en bas du téléphone, une fois la saisie commencée, tant que le vrai bouton
+  // n'est pas à l'écran (2e tour : il était à 4 ou 5 écrans du haut).
+  const radice = useRef<HTMLDivElement>(null);
+  const pulsanti = useRef<HTMLDivElement>(null);
+  const [inVista, setInVista] = useState({ radice: false, pulsanti: false });
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const o = new IntersectionObserver((voci) => setInVista((s) => {
+      const n = { ...s };
+      for (const e of voci) { if (e.target === radice.current) n.radice = e.isIntersecting; if (e.target === pulsanti.current) n.pulsanti = e.isIntersecting; }
+      return n;
+    }));
+    if (radice.current) o.observe(radice.current);
+    if (pulsanti.current) o.observe(pulsanti.current);
+    return () => o.disconnect();
+  }, []);
+  const iniziato = Object.keys(toccati).some((k) => !k.endsWith('.data_firma'));
+  const mostraBarra = iniziato && inVista.radice && !inVista.pulsanti;
   const composto = useMemo(() => doc.componi(v), [doc, v]);
   const visibili = campiVisibili(doc, v);
+  const primaData = visibili.find((c) => c.tipo === 'data' && c.id !== 'data_firma')?.id;
   const testo = composto.righe.map((r) => r.t).join('\n');
   const piede = 'Compilato con modulidacompilare.it, sito indipendente: modello indicativo, non è consulenza legale.';
   const scarica = () => {
-    if (bloccato()) return;
+    if (bloccato('pdf')) return;
     const bytes = creaPdf(composto.righe, piede);
     const blob = new Blob([bytes], { type: 'application/pdf' });
     const a = document.createElement('a');
@@ -88,16 +130,21 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
     document.body.appendChild(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
   };
-  const copia = async () => { if (bloccato()) return; try { await navigator.clipboard.writeText(testo); setCopiato(true); } catch { setCopiato(false); } };
+  const copia = async () => { if (bloccato('copia')) return; try { await navigator.clipboard.writeText(testo); setCopiato(true); } catch { setCopiato(false); } };
 
   const mancanti = sceltaMancanti(doc, v);
-  const [avvisoMancanti, setAvvisoMancanti] = useState(false);
+  // La liste « manca ancora » n'apparaît qu'au clic sur « Scarica » ou « Copia » (2e tour : affichée avant toute
+  // saisie, elle passait pour une erreur).
+  const [avvisoMancanti, setAvvisoMancanti] = useState<'' | 'pdf' | 'copia'>('');
   /** PDF et copie attendent les choix obligatoires : on amène le lecteur au premier qui manque. */
-  const bloccato = () => {
-    if (!mancanti.length) return false;
-    setAvvisoMancanti(true);
-    const el = document.getElementById(`${id}-${mancanti[0].id}`);
+  const vaiA = (cid: string) => {
+    const el = document.getElementById(`${id}-${cid}`);
     el?.scrollIntoView({ block: 'center', behavior: 'smooth' }); el?.focus({ preventScroll: true });
+  };
+  const bloccato = (azione: 'pdf' | 'copia') => {
+    if (!mancanti.length) return false;
+    setAvvisoMancanti(azione);
+    vaiA(mancanti[0].id);
     return true;
   };
   const campo = (c: Campo) => {
@@ -106,10 +153,12 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
     const aiuto = c.aiuto?.[lang];
     if (c.tipo === 'scelta') {
       const opzioni = (c.opzioni ?? []).map((o) => ({ value: o.v, label: o.l[lang] }));
+      const manca = !!avvisoMancanti && mancanti.some((m) => m.id === c.id);
+      if (opzioni.length <= 6) return <SceltaRadio key={c.id} id={fid} label={label} value={v[c.id] ?? ''} onChange={set(c.id)} options={opzioni} help={aiuto} manca={manca} lang={lang} />;
       if (c.def === undefined && !opzioni.some((o) => o.value === '')) opzioni.unshift({ value: '', label: T(lang, 'Scegli…', 'Choose…') });
-      return <SelectField key={c.id} id={fid} label={label} value={v[c.id] ?? ''} onChange={set(c.id)} options={opzioni} help={aiuto} />;
+      return <SelectField key={c.id} id={fid} label={label} value={v[c.id] ?? ''} onChange={set(c.id)} options={opzioni} help={manca ? T(lang, 'Manca questa risposta: tocca la lista e scegli.', 'This answer is missing: tap the list and choose.') : aiuto} />;
     }
-    if (c.tipo === 'data') return <DataField key={c.id} id={fid} label={label} value={v[c.id] ?? ''} onChange={set(c.id)} lang={lang} help={aiuto} />;
+    if (c.tipo === 'data') return <DataField key={c.id} id={fid} label={label} value={v[c.id] ?? ''} onChange={set(c.id)} lang={lang} help={aiuto} esempio={c.id === primaData} />;
     let stato: string | undefined;
     if (c.tipo === 'cf') {
       const e = verificaCf(v.cf ?? '');
@@ -134,18 +183,20 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
     { l: T(lang, 'Lettere e altri', 'Letters and other'), ids: ['affitto', 'servizio', 'dimissioni', 'testamento'] },
   ];
   return (
-    <div className="rechner grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+    <div ref={radice} className="rechner grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <div className="text-sm font-medium text-navy-700 lg:col-span-2">{doc.pdf ? T(lang, '1. Compila i campi · 2. Controlla l’anteprima · 3. Scarica il PDF, in fondo al modulo', '1. Fill in the fields · 2. Check the preview · 3. Download the PDF, at the end of the form') : T(lang, '1. Compila i campi · 2. Ricopia a mano il testo che compare', '1. Fill in the fields · 2. Copy out by hand the text that appears')}</div>
       <div role="group" className="grid content-start gap-4" aria-label={doc.nome[lang]}>
+        {/* 2e tour : « Nessun dato lascia il tuo dispositivo » n'arrivait qu'après le bouton, une fois le codice fiscale tapé. */}
+        <p className="rounded-md border-l-4 border-green-700 bg-green-50 px-3 py-1.5 text-sm text-navy-900"><span className="lg:hidden">{T(lang, 'Gratis e senza account. Quello che scrivi resta sul tuo telefono o computer: non viene inviato a nessuno e sparisce quando chiudi la pagina.', 'Free, no account. What you type stays on your phone or computer: it is sent to no one and disappears when you close the page.')}</span><span className="hidden lg:inline">{T(lang, 'Gratis e senza account: ciò che scrivi resta sul tuo computer.', 'Free, no account: what you type stays on your computer.')}</span></p>
         {scelta && (
-          <SelectField id={`${id}-doc`} label={T(lang, 'Quale documento ti serve? (tocca per cambiare)', 'Which document do you need? (tap to change)')} value={doc.id} onChange={cambiaDoc}
+          <SelectField id={`${id}-doc`} label={T(lang, 'Quale documento ti serve? (tocca per cambiare)', 'Which document do you need? (tap to change)')} help={T(lang, 'I campi qui sotto cambiano secondo il documento scelto.', 'The fields below change with the document you choose.')} value={doc.id} onChange={cambiaDoc}
             options={gruppi.flatMap((g) => g.ids.map((i) => ({ value: i, label: `${g.l}: ${docById(i)!.nome[lang]}` })))} />
         )}
         {visibili.map(campo)}
       </div>
       <div className="lg:sticky lg:top-20 lg:self-start" data-resultat aria-live="polite">
         <p className="mb-2 text-sm font-medium text-navy-600">{doc.pdf ? T(lang, 'Anteprima: il documento si aggiorna mentre scrivi', 'Preview: the document updates as you type (it stays in Italian)') : T(lang, 'Testo da ricopiare a mano', 'Text to copy out by hand (in Italian)')}</p>
-        <div className="mb-2 text-xs text-navy-600">{T(lang, 'Le frasi sulle sanzioni sono obbligatorie in ogni autocertificazione: riguardano solo chi scrive il falso.', 'The sentences on penalties are compulsory in every self-certification: they only concern false statements.')}</div>
+        <div className="mb-2 text-sm text-navy-800">{T(lang, 'Le frasi sulle sanzioni sono obbligatorie in ogni autocertificazione: riguardano solo chi scrive il falso.', 'The sentences on penalties are compulsory in every self-certification: they only concern false statements.')}</div>
         <div lang="it" className="rounded-lg border border-navy-200 bg-white p-4 font-serif text-[0.9rem] leading-relaxed text-navy-900 shadow-sm sm:p-6">
           {composto.righe.map((r, i) => (
             <p key={i} style={{ marginTop: r.gap ? Math.min(r.gap, 18) : 0 }} className={`${r.b ? 'font-bold' : ''} ${r.c ? 'text-center' : r.r ? 'text-right' : ''} ${r.s && r.s < 10 ? 'text-[0.8rem] text-navy-700' : ''} ${r.s && r.s > 12 ? 'text-base' : ''}`}>{r.t}</p>
@@ -156,18 +207,26 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
             {composto.avvisi.map((a, i) => <li key={i} className={`rounded-md border-l-4 px-3 py-1.5 ${a.tipo === 'ok' ? 'border-green-700 bg-green-50 text-navy-900' : 'border-amber-500 bg-amber-50 text-navy-900'}`}>{a.testo[lang]}</li>)}
           </ul>
         )}
-        {mancanti.length > 0 && (
-          <div className={`mt-4 rounded-md border-l-4 px-3 py-1.5 text-sm ${avvisoMancanti ? 'border-red-600 bg-red-50 font-medium text-red-800' : 'border-amber-500 bg-amber-50 text-navy-900'}`} role={avvisoMancanti ? 'alert' : undefined}>
-            {T(lang, 'Prima di scaricare, scegli: ', 'Before downloading, choose: ')}{mancanti.map((c) => c.label[lang]).join('; ')}.
+        {avvisoMancanti && mancanti.length > 0 && (
+          <div className="mt-4 rounded-md border-l-4 border-red-600 bg-red-50 px-3 py-2 text-sm text-red-900" role="alert">
+            <p className="font-medium">{avvisoMancanti === 'pdf' ? T(lang, 'Per scaricare il PDF manca ancora:', 'To download the PDF, still missing:') : T(lang, 'Per copiare il testo manca ancora:', 'To copy the text, still missing:')}</p>
+            <ul className="mt-1 list-disc pl-5">
+              {mancanti.map((c) => <li key={c.id}><button type="button" onClick={() => vaiA(c.id)} className="text-left underline">{(c.breve ?? c.label)[lang]}</button></li>)}
+            </ul>
           </div>
         )}
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div ref={pulsanti} className="mt-4 flex flex-wrap gap-3">
           {doc.pdf && <button type="button" onClick={scarica} className="rounded-lg bg-accent-700 px-5 py-3 text-sm font-semibold text-white hover:bg-accent-800">{T(lang, 'Scarica il PDF', 'Download the PDF')}</button>}
           <button type="button" onClick={copia} className="rounded-lg border border-accent-700 px-5 py-3 text-sm font-semibold text-accent-800 hover:bg-accent-50">{copiato ? T(lang, 'Testo copiato', 'Text copied') : T(lang, 'Copia il testo (da incollare in un’e-mail)', 'Copy the text (to paste into an e-mail)')}</button>
         </div>
         <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-navy-700">
           {doc.promemoria.map((p, i) => <li key={i}>{p[lang]}</li>)}
         </ul>
+        {mostraBarra && (
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-navy-200 bg-white/95 px-4 py-2 shadow-[0_-2px_8px_rgba(0,0,0,0.08)] lg:hidden">
+            <button type="button" onClick={() => pulsanti.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })} className="w-full rounded-lg bg-accent-700 px-5 py-3 text-sm font-semibold text-white">{doc.pdf ? T(lang, 'Vai al PDF: anteprima e download ↓', 'Go to the PDF: preview and download ↓') : T(lang, 'Vai al testo da ricopiare ↓', 'Go to the text to copy ↓')}</button>
+          </div>
+        )}
         <p className="mt-3 text-xs text-navy-600">{T(lang, 'Modello indicativo scritto sul testo di legge, non è consulenza legale. Nessun dato lascia il tuo dispositivo: il PDF si crea qui, sul tuo telefono o computer.', 'Indicative template written from the law, not legal advice. No data leaves your device: the PDF is made right here, on your phone or computer.')}{methodHref && <> <a href={methodHref} className="underline">{T(lang, 'Metodo e fonti', 'Method and sources')}</a></>}</p>
       </div>
     </div>

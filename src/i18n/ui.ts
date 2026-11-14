@@ -6,7 +6,7 @@ const it = {
   asOf: 'Norme in vigore nel', lastUpdated: 'testi riletti il', footerValidated: 'Fonti: testi di legge su Normattiva (testo non ufficiale: fa fede la Gazzetta Ufficiale)', footerBrowser: 'Nessun account · nulla di ciò che scrivi viene inviato o conservato · PDF creato nel browser · gratis',
   footerDisclaimer: 'Sito indipendente pubblicato da Radif Partners. Non è il sito di un comune, di un ministero o di un altro ente pubblico, non è uno studio legale e non vende consulenze o pratiche. I moduli sono modelli indicativi scritti sul testo di legge: non sono consulenza legale. Se l’ufficio ha un proprio modulo, usa quello.', footerPopular: '', notFound: 'Questa pagina non esiste.',
   readMore: 'Leggi tutto',
-  independent: 'Sito indipendente, non è un sito pubblico: il modulo è un modello indicativo e non è consulenza legale.',
+  independent: 'Sito indipendente, non è un sito dello Stato né di un comune: il modulo è un modello indicativo e non è consulenza legale.',
 };
 const en: typeof it = {
   updatedOn: 'Updated on', editorialPolicy: 'Editorial policy', contactLabel: 'Contact', reviewedBy: 'Checked by',

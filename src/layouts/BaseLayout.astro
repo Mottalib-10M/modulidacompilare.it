@@ -138,7 +138,7 @@ const crumbAside = Astro.slots.has('crumb-aside') ? (await Astro.slots.render('c
           </button>
         </div>
       </div>
-      <div id="mobile-menu" class="hidden max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-navy-200 bg-white px-4 pb-4 lg:hidden">
+      <div id="mobile-menu" class="hidden h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-navy-200 bg-white px-4 pb-4 lg:hidden">
         {/* Testeurs naïfs du 2026-11-14 : une rubrique fermée parmi des rubriques ouvertes passait pour vide
             (« Deleghe ») et l'accueil n'était joignable que par le logo. Toutes ouvertes, accueil en tête. */}
         <div class="border-b border-navy-100 py-2"><a href={homeHref} class="block py-2 text-sm font-semibold leading-snug text-navy-900">{ui.breadcrumbHome}</a></div>

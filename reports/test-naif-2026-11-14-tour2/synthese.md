@@ -1,0 +1,35 @@
+# Synthèse du 2e tour des testeurs naïfs (2026-11-14), modulidacompilare.it
+
+Notes : T1 8/7/9, T2 8/7/9, T3 8/7/9. Seule la Facilité (7 chez les trois) bloquait : le générateur est rendu plus
+simple à remplir. Rien de ce que le 1er tour a corrigé n'est défait : dates gg/mm/aaaa (`DataField`), aucun choix
+qui engage pré-rempli (les boutons radio partent tous décochés), tests `date-e-scelte` toujours verts.
+
+| # | Difficulté (testeurs) | Décision | Raison / correction |
+|---|---|---|---|
+| 1 | Le champ qui fait le document (« Cosa dichiari », « Stato civile », « Persone nella famiglia anagrafica »…) arrive après 9 champs d'identité, dans une liste « Scegli… » qui cache ses choix (T2, aussi T1 et T3) | **corrigé** | Champ marqué `chiave` dans `documenti.ts`, affiché juste après « Chi firma » avec les champs qui en dépendent (conjoint, membres de la famille, enfant, montant…) : `campiOrdinati`. Concerne stato civile, casellario, reddito, famiglia, nascita, atto di notorietà, disdetta affitto, disdetta servizio. Tout choix de 6 options ou moins s'affiche en boutons radio visibles (`SceltaRadio`), aucun coché d'avance ; la liste reste pour les longues listes (rapport de parenté, préavis CCNL). Test `tests/facilita-tour2.test.ts`. |
+| 2 | Bandeau jaune « Prima di scaricare, scegli: Chi firma: sei un uomo o una donna?. » affiché avant toute saisie, ponctuation robot « ?. » « ?; » (T1, T2, T3) | **corrigé** | Le bandeau n'apparaît plus qu'au clic sur « Scarica il PDF » ou « Copia » : « Per scaricare il PDF manca ancora: » (ou « Per copiare il testo… ») suivi d'une liste à puces de noms courts (« chi firma: uomo o donna », « cosa dichiari »…), chaque puce ramène au champ. Le champ manquant est encadré de rouge avec « Manca questa risposta: tocca una delle scelte. » |
+| 3 | « Nessun dato lascia il tuo dispositivo » n'apparaît qu'après le bouton, une fois le codice fiscale tapé (T3) | **corrigé** | Ligne verte au-dessus du premier champ : « Gratis e senza account. Quello che scrivi resta sul tuo telefono o computer: non viene inviato a nessuno e sparisce quando chiudi la pagina. » (même promesse que la FAQ de l'accueil ; aucun stockage dans le générateur). |
+| 4 | « Gratis » promis par Google, absent de la page (T3) | **corrigé** | Dans la ligne ci-dessus. |
+| 5 | Jargon « lettera aa / bb / a / h / o / p / m / e / f / b » dans les paragraphes visibles (T1, T2, T3) | **corrigé** | Les lettres d'article sortent du texte visible (7 pages, it et en) : la phrase commence par ce qu'on dichiara, la loi vient en fin (« articolo 46 del DPR 445/2000 »). Elles restent dans le document produit (formule légale) et dans les sources. |
+| 6 | Page Reddito : « Cosa dichiari », « Dove si legge / Non indicarlo », « Per quale pratica » sans aide (T1, T3) | **corrigé** | Aide sous « Cosa dichiari » (l'ufficio chiede di solito il reddito complessivo, où le trouver, renvoi aux questions) ; « Dove si legge » renommé « Documento da cui copi la cifra (facoltativo) » ; aide sous l'importo (730, Modello Redditi, CU) et sous « Per quale pratica » (exemple, peut rester vide). Aucun chiffre nouveau. |
+| 7 | Stato civile : le chapeau promet les données du conjoint, aucun champ visible (T2, T3) | **corrigé** | Les champs du conjoint s'ouvrent juste sous le choix ; aide : « Se sei coniugato, unito civilmente o vedovo, qui sotto compaiono i campi per il coniuge. » Même principe pour la famille (« Poi, qui sotto, compaiono le righe per le altre persone »). |
+| 8 | « Nascita di chi » placé après toute l'identité (T1, T2) | **corrigé** | Remonté sous « Chi firma », libellé « Di chi è la nascita da dichiarare? » (défaut neutre « La mia » gardé, comme au 1er tour). |
+| 9 | Bouton « Scarica il PDF » à 4 ou 5 écrans du haut sur téléphone (T1, T3) | **corrigé** | Sur téléphone, une fois la saisie commencée et tant que le vrai bouton n'est pas à l'écran, une barre collée en bas « Vai al PDF: anteprima e download ↓ » ramène à l'aperçu et aux boutons. |
+| 10 | Aide de date répétée sous chaque date, même sous la date de signature déjà remplie (T2) | **corrigé** | L'exemple « 07/04/1965 (o solo le cifre…) » ne s'écrit plus que sous la première date à taper. |
+| 11 | « Non è un sito pubblico » ambigu (T1, T2) | **corrigé** | « Sito indipendente, non è un sito dello Stato né di un comune: … » |
+| 12 | Menu téléphone qui laisse voir « Nome » de la page derrière (T1, T2, T3) | **corrigé** | Le menu occupe toute la hauteur sous l'en-tête (`h-[calc(100dvh-4rem)]`). Défaut de la trame (`BaseLayout.astro`). |
+| 13 | « LM-77 » dans l'exemple du titre d'études (T1, T2, T3) | **corrigé** | Exemple « licenza media, diploma di ragioneria, laurea magistrale in Economia » ; dans le chapeau, LM-77 est expliqué (« la classe, cioè la sigla del tipo di corso »). |
+| 14 | « DSU », « CAF » d'un coup (T3) | **corrigé** | « la DSU (dichiarazione sostitutiva unica) all'INPS, che si fa al CAF (centro di assistenza fiscale)… » |
+| 15 | « Firma digitale » inconnue, pas d'imprimante (T3) | **corrigé** | Rappels : « Firma a mano con la penna. Se invii il file e hai una firma digitale (la firma elettronica con valore legale), puoi usare quella. » et « Non hai la stampante? Manda il PDF a qualcuno che ce l'ha, oppure stampalo in una copisteria, poi firmalo a penna. » |
+| 16 | Phrase sur les sanctions petite et grise (T3) | **corrigé** | Même phrase, en taille normale et plus foncée au-dessus de l'aperçu (pas de « non rischi nulla », promesse trop large). |
+| 17 | Liste du document préréglée sur « residenza » à l'accueil (T3), double mécanisme chips + liste (T2) | **corrigé** (en partie) | Aide sous la liste : « I campi qui sotto cambiano secondo il documento scelto. » Les raccourcis « Vai diretto » restent (appréciés par T1 et T3). |
+| 18 | Aperçu vide plein de « ____ », « in ____ » obscur (T1, T3) | **non retenu** | Les blancs sont ceux du PDF tant que rien n'est tapé ; un exemple grisé risquerait de partir dans le PDF. Le haut de l'aperçu dit déjà qu'il se remplit en écrivant. |
+| 19 | Question « uomo o donna » à reformuler (T2) | **non retenu** | Un seul testeur ; T1 et T3 la comprennent grâce à l'aide ; les boutons montrent maintenant « Uomo (il sottoscritto) / Donna (la sottoscritta) ». |
+| 20 | Résidence demandée sur l'autocertification de naissance (T3) | **non retenu** | La formule d'identité de l'art. 46 inclut la résidence de chi firma. |
+| 21 | « Dimissioni online » rangé sous « Lettere e testamento » (T2) | **non retenu** | Un seul testeur, rangement sans effet sur le remplissage. |
+| 22 | Données gardées d'un module à l'autre, non vérifiable (T2) | **non retenu** | Déjà le cas (`cambiaDoc`). |
+
+## Défauts de trame relevés (signalés, `_trame/_template` non modifié)
+- `BaseLayout.astro` : le menu téléphone n'a qu'une hauteur maximale ; la page se voit sous le menu quand il est court.
+- `SelectField` est le seul composant de choix de la trame : pas de groupe de boutons radio pour un choix court
+  qui doit rester visible et sans valeur par défaut (`Toggle` en boutons ne laisse pas l'état « rien choisi » lisible).
