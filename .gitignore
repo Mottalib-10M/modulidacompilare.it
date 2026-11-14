@@ -9,3 +9,4 @@ scripts/__pycache__
 data/raw/
 data/textes-sources/
 logs/
+__pycache__/
