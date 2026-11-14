@@ -18,7 +18,7 @@ const description = GA4_ID ? 'Google Analytics audience measurement with cookies
     <LegalIdentity lang={lang} />
     <p>For any question about your data: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. No data protection officer has been appointed, as the conditions of Article 37 GDPR are not met.</p>
     <h2>2. What you type stays in your browser</h2>
-    <p>The document and the PDF are put together in your browser. The name, tax code, address, dates and anything else you type into the forms <strong>are sent to no server</strong>, are stored nowhere and are linked to no identifier: they vanish when you close the page. The site asks for no account, name or email address and writes nothing into the page address. The downloaded file stays wherever you save it.</p>
+    <p>The site’s calculations run in your browser. The amounts, dates and circumstances you enter <strong>are sent to no server</strong>, are stored nowhere and are linked to no identifier. The site asks for no account, name or email address. A share link carries your inputs in the page address: only send it to people you choose.</p>
     <h2>3. Processing carried out</h2>
     <h3>Host access logs</h3>
     <p>For each request the host records the IP address, date and time, the page requested, the browser and the referring page. Purpose: security of the service and fault diagnosis. Legal basis: the publisher’s legitimate interests (Article 6(1)(f) GDPR). Retention: as set by the host’s own policy.</p>
@@ -47,7 +47,7 @@ const description = GA4_ID ? 'Google Analytics audience measurement with cookies
     {CLARITY_ID && (<p>For stability monitoring: block the <code>clarity.ms</code> domain in your browser or with a content blocker.</p>)}
     <p>You may lodge a complaint with the supervisory authority: {LEGAL.supervisoryAuthority} (<a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>).</p>
     <h2>7. No automated decision-making</h2>
-    <p>A filled-in form or a computed deadline is produced at your request, from your inputs, in your browser. It has no legal effect and is not an automated decision under Article 22 GDPR. No profiling takes place.</p>
+    <p>A calculation result is an estimate produced at your request, from your inputs, in your browser. It has no legal effect and is not an automated decision under Article 22 GDPR. No profiling takes place.</p>
     <p>See also the <a href={route('cookies', lang)}>cookies</a> page. Last updated: {LAST_UPDATED}.</p>
   </div>
 </PageLayout>
