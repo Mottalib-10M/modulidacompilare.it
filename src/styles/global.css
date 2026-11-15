@@ -128,3 +128,6 @@ p[id$="-help"]:not([role="status"]), [data-fixe], [data-actuellement], [aria-liv
 .prose details.sezione[open] > summary::after { transform: rotate(-135deg); }
 .prose details.sezione > summary h2 { margin: 0; padding: 0; border: none; font-size: 1.2em; }
 .prose details.sezione > :not(summary):first-of-type { margin-top: .4em; }
+
+/* Champs en subgrid : quand le formulaire est étiré à la hauteur du résultat voisin, ses rangées ne doivent pas s'étirer (trous entre libellé, case et aide). */
+:where(form, div, fieldset):has(> .grid-rows-subgrid) { align-content: start; }
