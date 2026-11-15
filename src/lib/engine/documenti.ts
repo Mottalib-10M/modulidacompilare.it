@@ -23,7 +23,7 @@ export interface Campo { id: string; label: L2; tipo: TipoCampo; opzioni?: Array
 export interface Riga { t: string; b?: boolean; c?: boolean; r?: boolean; gap?: number; s?: number }
 export interface Avviso { tipo: 'ok' | 'attenzione'; testo: L2 }
 export interface Composto { righe: Riga[]; avvisi: Avviso[] }
-export interface Documento { id: string; nome: L2; campi: Campo[]; componi: (v: Valori) => Composto; pdf: boolean; file: string; promemoria: L2[] }
+export interface Documento { id: string; nome: L2; campi: Campo[]; componi: (v: Valori) => Composto; pdf: boolean; file: string; promemoria: L2[]; prima?: L2[] }
 
 const VUOTO = '____________';
 const x = (v: Valori, id: string, vuoto = VUOTO) => (v[id] ?? '').trim() || vuoto;
@@ -118,7 +118,7 @@ export const DOCUMENTI: Documento[] = [
   {
     id: 'famiglia', file: 'autocertificazione-stato-di-famiglia', pdf: true,
     nome: { it: 'Autocertificazione dello stato di famiglia', en: 'Family status self-certification' },
-    campi: [...ANAGRAFICA, { id: 'componenti', label: { it: 'Persone nella famiglia anagrafica, tu compreso', en: 'People in the registered household, you included' }, tipo: 'scelta', chiave: true, breve: { it: 'quante persone ci sono nella famiglia', en: 'how many people are in the household' }, aiuto: { it: 'Poi, qui sotto, compaiono le righe per le altre persone.', en: 'Rows for the other people then appear just below.' }, opzioni: ['1', '2', '3', '4', '5', '6'].map((n) => ({ v: n, l: { it: n === '1' ? '1 (vivo da solo)' : n, en: n === '1' ? '1 (I live alone)' : n } })) }, ...MEMBRI, ...CHIUSURA],
+    campi: [...ANAGRAFICA, { id: 'componenti', label: { it: 'Quante persone siete nello stato di famiglia, contando anche te?', en: 'People in the registered household, you included' }, tipo: 'scelta', chiave: true, breve: { it: 'quante persone ci sono nella famiglia', en: 'how many people are in the household' }, aiuto: { it: 'Tocca un numero: qui sotto compaiono le righe per le altre persone. Poi vengono i tuoi dati.', en: 'Rows for the other people then appear just below.' }, opzioni: ['1', '2', '3', '4', '5', '6'].map((n) => ({ v: n, l: { it: n === '1' ? '1 (solo io)' : n, en: n === '1' ? '1 (I live alone)' : n } })) }, ...MEMBRI, ...CHIUSURA],
     componi: (v) => {
       if (!v.componenti) return art46(v, [`che la propria famiglia anagrafica, residente a ${x(v, 'comune')} in ${x(v, 'indirizzo')}, è così composta: ${VUOTO}`]);
       const n = Number(v.componenti) || 1;
@@ -127,7 +127,8 @@ export const DOCUMENTI: Documento[] = [
       if (n === 1) righe[1] = righe[1].replace(/;$/, '.');
       return art46(v, n === 1 ? [`che la propria famiglia anagrafica, residente a ${x(v, 'comune')} in ${x(v, 'indirizzo')}, è composta ${g(v, 'dal solo dichiarante', 'dalla sola dichiarante')}.`] : righe);
     },
-    promemoria: [{ it: 'La famiglia anagrafica è quella registrata in anagrafe allo stesso indirizzo, non la parentela: scrivi solo chi risulta nel tuo stato di famiglia.', en: 'The registered household is the one recorded at the registry office at the same address, not your wider family: list only the people on your household record.' }, ...PROMEMORIA_46],
+    prima: [{ it: 'Scrivi solo chi è iscritto in anagrafe al tuo stesso indirizzo (lo stato di famiglia), non tutti i parenti: un figlio che ha spostato la residenza altrove non va scritto.', en: 'The registered household is the one recorded at the registry office at the same address, not your wider family: list only the people on your household record.' }],
+    promemoria: [...PROMEMORIA_46],
   },
   {
     id: 'nascita', file: 'autocertificazione-nascita', pdf: true,
@@ -137,7 +138,8 @@ export const DOCUMENTI: Documento[] = [
       { id: 'f_luogo', label: { it: 'Luogo di nascita del figlio o della figlia', en: 'Child’s place of birth' }, tipo: 'testo', se: (v) => v.chi === 'figlio' },
       { id: 'f_data', label: { it: 'Data di nascita del figlio o della figlia', en: 'Child’s date of birth' }, tipo: 'data', se: (v) => v.chi === 'figlio' }, ...CHIUSURA],
     componi: (v) => art46(v, [v.chi === 'figlio' ? `che in data ${d(v, 'f_data')} a ${x(v, 'f_luogo')} è nato/a il proprio figlio/la propria figlia ${x(v, 'f_nome')}.` : `di essere ${g(v, 'nato', 'nata')} a ${x(v, 'luogo_nascita')} il ${d(v, 'data_nascita')}.`]),
-    promemoria: [{ it: 'Nato o nata all’estero? Va bene se la nascita è trascritta in un comune italiano; altrimenti, e per chi non è cittadino dell’Unione europea, serve il certificato straniero (vedi le domande più sotto).', en: 'Born abroad? Fine if the birth is recorded in an Italian comune; otherwise, and for non-EU citizens, you need the foreign certificate (see the questions below).' }, ...PROMEMORIA_46],
+    prima: [{ it: 'Nato o nata all’estero? Va bene se la nascita è trascritta in un comune italiano; altrimenti, e per chi non è cittadino dell’Unione europea, serve il certificato straniero (vedi le domande più sotto).', en: 'Born abroad? Fine if the birth is recorded in an Italian comune; otherwise, and for non-EU citizens, you need the foreign certificate (see the questions below).' }],
+    promemoria: [...PROMEMORIA_46],
   },
   {
     id: 'civile', file: 'autocertificazione-stato-civile', pdf: true,
@@ -170,23 +172,24 @@ export const DOCUMENTI: Documento[] = [
       { id: 'titolo', label: { it: 'Titolo di studio', en: 'Qualification' }, tipo: 'testo', aiuto: { it: 'Esempio: licenza media, diploma di ragioneria, laurea magistrale in Economia', en: 'Example: licenza media, diploma di ragioneria, master’s degree in Economics' } },
       { id: 'istituto', label: { it: 'Scuola o università', en: 'School or university' }, tipo: 'testo' },
       { id: 'sede', label: { it: 'Città della scuola o dell’università', en: 'City of the school or university' }, tipo: 'testo' },
-      { id: 'anno', label: { it: 'Anno o data del conseguimento', en: 'Year or date awarded' }, tipo: 'testo' },
-      { id: 'voto', label: { it: 'Votazione (facoltativa)', en: 'Final mark (optional)' }, tipo: 'testo', facoltativo: true }, ...CHIUSURA],
+      { id: 'anno', label: { it: 'Anno o data del conseguimento', en: 'Year or date awarded' }, tipo: 'testo', aiuto: { it: 'Per esempio 2004 oppure 15/07/2004', en: 'For example 2004 or 15/07/2004' } },
+      { id: 'voto', label: { it: 'Votazione (facoltativa)', en: 'Final mark (optional)' }, tipo: 'testo', facoltativo: true, aiuto: { it: 'Per esempio 54/60, 100/100 o 110/110 e lode', en: 'For example 54/60, 100/100 or 110/110 e lode' } }, ...CHIUSURA],
     componi: (v) => art46(v, [`di aver conseguito il titolo di studio di ${x(v, 'titolo')} presso ${x(v, 'istituto')} di ${x(v, 'sede')}, nell’anno ${x(v, 'anno')}${(v.voto ?? '').trim() ? `, con la votazione di ${v.voto.trim()}` : ''}.`]),
-    promemoria: [{ it: 'Un titolo preso all’estero non si autocertifica come titolo italiano: prima va riconosciuto in Italia (equipollenza o dichiarazione di valore).', en: 'A qualification obtained abroad cannot be self-certified as an Italian one: it must first be recognised in Italy (equivalence or declaration of value).' }, ...PROMEMORIA_46],
+    prima: [{ it: 'Un titolo preso all’estero non si autocertifica come titolo italiano: prima va riconosciuto in Italia (equipollenza o dichiarazione di valore).', en: 'A qualification obtained abroad cannot be self-certified as an Italian one: it must first be recognised in Italy (equivalence or declaration of value).' }],
+    promemoria: [...PROMEMORIA_46],
   },
   {
     id: 'reddito', file: 'autocertificazione-reddito', pdf: true,
     nome: { it: 'Autocertificazione del reddito', en: 'Income self-certification' },
     campi: [...ANAGRAFICA,
       { id: 'tipo', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', chiave: true, breve: { it: 'cosa dichiari', en: 'what you declare' }, aiuto: { it: 'Di solito l’ufficio chiede il reddito complessivo: lo trovi nel 730, nel Modello Redditi o nella Certificazione Unica (vedi le domande più sotto).', en: 'Offices usually ask for total income: it is on your 730, Redditi form or Certificazione Unica (see the questions below).' }, opzioni: [
-        { v: 'complessivo', l: { it: 'Reddito complessivo', en: 'Total income (reddito complessivo)' } },
-        { v: 'imponibile', l: { it: 'Reddito imponibile ai fini IRPEF', en: 'Taxable income for IRPEF' } },
+        { v: 'complessivo', l: { it: 'Reddito complessivo (quello che chiede quasi sempre l’ufficio)', en: 'Total income (reddito complessivo)' } },
+        { v: 'imponibile', l: { it: 'Reddito imponibile IRPEF (la parte su cui si calcola l’imposta sul reddito: solo se te lo chiedono)', en: 'Taxable income for IRPEF' } },
         { v: 'nessuno', l: { it: 'Nessun reddito nell’anno', en: 'No income in the year' } }] },
       { id: 'anno', label: { it: 'Anno dei redditi', en: 'Income year' }, tipo: 'testo', def: '2025', chiave: true },
       { id: 'importo', label: { it: 'Importo in euro', en: 'Amount in euros' }, tipo: 'testo', se: (v) => v.tipo !== 'nessuno', aiuto: { it: 'La cifra scritta nel 730, nel Modello Redditi o nella Certificazione Unica (CU), per esempio 18.540,00', en: 'The figure on your 730, Redditi form or Certificazione Unica (CU), for example 18.540,00' } },
       { id: 'fonte', label: { it: 'Documento da cui copi la cifra (facoltativo)', en: 'Document you copy the figure from (optional)' }, tipo: 'scelta', def: '', facoltativo: true, aiuto: { it: 'Puoi lasciare «Non indicarlo».', en: 'You can leave «Do not state it».' }, se: (v) => v.tipo !== 'nessuno', opzioni: [
-        { v: '', l: { it: 'Non indicarlo', en: 'Do not state it' } }, { v: '730', l: { it: 'Modello 730 (dichiarazione dei redditi)', en: 'Form 730 (tax return)' } }, { v: 'redditi', l: { it: 'Modello Redditi Persone fisiche', en: 'Form Redditi PF' } }, { v: 'cu', l: { it: 'Certificazione Unica (CU, data da datore o ente pensione)', en: 'Certificazione Unica (CU, from employer or pension body)' } }] },
+        { v: '', l: { it: 'Non indicarlo', en: 'Do not state it' } }, { v: '730', l: { it: 'Modello 730 (dichiarazione dei redditi)', en: 'Form 730 (tax return)' } }, { v: 'redditi', l: { it: 'Modello Redditi Persone fisiche', en: 'Form Redditi PF' } }, { v: 'cu', l: { it: 'Certificazione Unica (CU, il foglio che ti manda il datore di lavoro o l’ente della pensione)', en: 'Certificazione Unica (CU, from employer or pension body)' } }] },
       { id: 'scopo', label: { it: 'Per quale pratica (facoltativo)', en: 'For which procedure (optional)' }, tipo: 'testo', facoltativo: true, chiave: true, aiuto: { it: 'Per esempio: iscrizione all’asilo nido. Puoi lasciarlo vuoto.', en: 'For example: nursery school enrolment. You can leave it empty.' } }, ...CHIUSURA],
     componi: (v) => {
       const fonte: Record<string, string> = { '730': ', come risulta dal Modello 730', redditi: ', come risulta dal Modello Redditi Persone fisiche', cu: ', come risulta dalla Certificazione Unica' };
@@ -195,21 +198,23 @@ export const DOCUMENTI: Documento[] = [
         : `che il proprio ${v.tipo === 'imponibile' ? 'reddito imponibile ai fini IRPEF' : v.tipo === 'complessivo' ? 'reddito complessivo' : `${VUOTO} (scegli cosa dichiari)`} relativo all’anno ${x(v, 'anno')} ammonta a euro ${x(v, 'importo')}${fonte[v.fonte] ?? ''}.${scopo}`;
       return art46(v, [t]);
     },
-    promemoria: [{ it: 'Per l’ISEE (l’indicatore della situazione economica) questo foglio non basta: serve la DSU (dichiarazione sostitutiva unica) all’INPS, che si fa al CAF (centro di assistenza fiscale) o sul sito dell’INPS.', en: 'For the ISEE (the household means indicator) this sheet is not enough: you file the DSU declaration with INPS, at a CAF tax-assistance centre or on the INPS website.' }, ...PROMEMORIA_46],
+    prima: [{ it: 'Per l’ISEE (indicatore della situazione economica) non basta: serve la DSU (dichiarazione sostitutiva unica), al CAF (centro di assistenza fiscale) o sul sito INPS.', en: 'For the ISEE (the household means indicator) this sheet is not enough: you file the DSU declaration with INPS, at a CAF tax-assistance centre or on the INPS website.' }],
+    promemoria: [...PROMEMORIA_46],
   },
   {
     id: 'penale', file: 'autocertificazione-carichi-pendenti', pdf: true,
     nome: { it: 'Autocertificazione di casellario e carichi pendenti', en: 'Criminal record self-certification' },
-    campi: [...ANAGRAFICA, { id: 'cosa', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', chiave: true, breve: { it: 'cosa dichiari', en: 'what you declare' }, opzioni: [
-      { v: 'entrambe', l: { it: 'Nessuna condanna e nessun procedimento noto', en: 'No convictions and no known proceedings' } },
+    campi: [...ANAGRAFICA, { id: 'cosa', label: { it: 'Cosa dichiari', en: 'What you declare' }, tipo: 'scelta', chiave: true, breve: { it: 'cosa dichiari', en: 'what you declare' }, aiuto: { it: 'Se non sai quale ti chiedono, scegli la prima: vale per tutte e due le cose.', en: 'If you do not know which one is asked, pick the first: it covers both.' }, opzioni: [
+      { v: 'entrambe', l: { it: 'Nessuna condanna e nessun procedimento penale a mio carico, che io sappia', en: 'No convictions and no criminal proceedings against me that I know of' } },
       { v: 'condanne', l: { it: 'Solo: nessuna condanna (casellario)', en: 'Only: no convictions (criminal record)' } },
-      { v: 'carichi', l: { it: 'Solo: nessun procedimento noto (carichi pendenti)', en: 'Only: no known proceedings (pending charges)' } }] }, ...CHIUSURA],
+      { v: 'carichi', l: { it: 'Solo: nessun procedimento penale che io sappia (carichi pendenti)', en: 'Only: no known proceedings (pending charges)' } }] }, ...CHIUSURA],
     componi: (v) => {
       const aa = `di non aver riportato condanne penali e di non essere ${g(v, 'destinatario', 'destinataria')} di provvedimenti che riguardano l'applicazione di misure di sicurezza e di misure di prevenzione, di decisioni civili e di provvedimenti amministrativi iscritti nel casellario giudiziale ai sensi della vigente normativa (art. 46, lettera aa);`;
       const bb = `di non essere a conoscenza di essere ${g(v, 'sottoposto', 'sottoposta')} a procedimenti penali (art. 46, lettera bb).`;
       return art46(v, v.cosa === 'condanne' ? [aa.replace(/;$/, '.')] : v.cosa === 'carichi' ? [bb] : v.cosa === 'entrambe' ? [aa, bb] : [`${VUOTO} (scegli cosa dichiari)`]);
     },
-    promemoria: [{ it: 'Se hai una condanna, non usare questo testo: la formula «non aver riportato condanne» sarebbe falsa. Chiedi il certificato del casellario.', en: 'If you have a conviction, do not use this text: «no convictions» would be false. Ask for the criminal record certificate instead.' }, ...PROMEMORIA_46],
+    prima: [{ it: 'Se hai una condanna, non usare questo testo: la formula «non aver riportato condanne» sarebbe falsa. Chiedi il certificato del casellario.', en: 'If you have a conviction, do not use this text: «no convictions» would be false. Ask for the criminal record certificate instead.' }],
+    promemoria: [...PROMEMORIA_46],
   },
   {
     id: 'notorieta', file: 'dichiarazione-sostitutiva-atto-di-notorieta', pdf: true,
@@ -275,8 +280,10 @@ export const DOCUMENTI: Documento[] = [
         avvisi: [{ tipo: 'attenzione', testo: { it: 'Questo è solo un testo da ricopiare a mano: stampato o scritto al computer il testamento è nullo (art. 602 e 606 c.c.).', en: 'This is only a text to copy out by hand: printed or typed, the will is void (art. 602 and 606 Civil Code).' } }],
       };
     },
+    prima: [
+      { it: 'Ricopia tutto a mano, con la tua grafia, su un foglio di carta: niente computer né moduli prestampati.', en: 'Copy everything out by hand, in your own handwriting, on paper: no computer and no pre-printed form (art. 602 Civil Code).' },
+    ],
     promemoria: [
-      { it: 'Ricopia tutto a mano, con la tua grafia, su un foglio di carta: niente computer né moduli prestampati (art. 602 c.c.).', en: 'Copy everything out by hand, in your own handwriting, on paper: no computer and no pre-printed form (art. 602 Civil Code).' },
       { it: 'Scrivi la data con giorno, mese e anno, e firma alla fine, dopo l’ultima disposizione.', en: 'Write the date with day, month and year, and sign at the end, after the last provision.' },
       { it: 'Controlla la quota riservata a coniuge e figli: il calcolo è più sotto nella pagina.', en: 'Check the share reserved to spouse and children: the calculation is further down the page.' },
       { it: 'Conservalo dove verrà trovato: da un notaio o da una persona di fiducia. Chi lo trova lo porta a un notaio per la pubblicazione (art. 620 c.c.).', en: 'Keep it where it will be found: with a notary or a trusted person. Whoever finds it takes it to a notary to be published (art. 620 Civil Code).' },
@@ -321,7 +328,8 @@ function deleghe(): Documento[] {
         { id: 'attivita', label: { it: 'Cosa può fare il delegato', en: 'What the delegate may do' }, tipo: 'area', aiuto: { it: 'Comincia con «a»: a presentare…, a ritirare…, a firmare…', en: 'Start with «a» (to): a presentare…, a ritirare… Write it in Italian.' } },
         { id: 'ente', label: { it: 'Presso quale ufficio o soggetto', en: 'At which office or body' }, tipo: 'testo' }, fino, ...CHIUSURA],
       componi: (v) => testo(v, `${x(v, 'attivita', 'a __________________________')} presso ${x(v, 'ente')}, in ${g(v, 'mio', 'mio')} nome e per mio conto`, (v.ente ?? '').trim()),
-      promemoria: [{ it: 'Allega la copia del tuo documento d’identità; il delegato porta il suo (art. 38, comma 3-bis, DPR 445/2000).', en: 'Attach a copy of your ID; the delegate brings theirs (art. 38(3-bis) DPR 445/2000).' }, { it: 'Per vendere una casa o firmare un contratto che richiede l’atto notarile serve una procura dal notaio (art. 1392 c.c.).', en: 'To sell a house or sign a contract that needs a notarial deed you need a power of attorney from a notary (art. 1392 Civil Code).' }],
+      promemoria: [{ it: 'Allega la copia del tuo documento d’identità; il delegato porta il suo (art. 38, comma 3-bis, DPR 445/2000).', en: 'Attach a copy of your ID; the delegate brings theirs (art. 38(3-bis) DPR 445/2000).' }],
+      prima: [{ it: 'Per vendere una casa o firmare un contratto che richiede l’atto notarile serve una procura dal notaio.', en: 'To sell a house or sign a contract that needs a notarial deed you need a power of attorney from a notary (art. 1392 Civil Code).' }],
     },
     {
       id: 'ritiro', file: 'delega-ritiro-documenti', pdf: true,
@@ -483,7 +491,8 @@ function dimissioni(): Documento {
         avvisi: [{ tipo: 'attenzione', testo: { it: 'Il preavviso e il modo di contarlo dipendono dal tuo CCNL: verifica il numero di giorni prima di decidere la data.', en: 'Notice and how it is counted depend on your CCNL: check the number of days before choosing the date.' } }],
       };
     },
-    promemoria: [{ it: 'Tieni a portata di mano: codice fiscale tuo e del datore, PEC o e-mail del datore, data di inizio del rapporto, tipo di contratto.', en: 'Have ready: your and the employer’s tax codes, the employer’s PEC or e-mail, the start date, the contract type.' }, { it: 'Non serve per il lavoro domestico e per le dimissioni firmate in sede protetta o davanti alle commissioni di certificazione (art. 26, comma 7).', en: 'Not needed for domestic work or for resignations signed in a protected venue or before a certification commission (art. 26(7)).' }],
+    promemoria: [{ it: 'Tieni a portata di mano: codice fiscale tuo e del datore, PEC o e-mail del datore, data di inizio del rapporto, tipo di contratto.', en: 'Have ready: your and the employer’s tax codes, the employer’s PEC or e-mail, the start date, the contract type.' }],
+    prima: [{ it: 'La procedura online non serve per il lavoro domestico (colf, badanti) né per le dimissioni firmate in sede protetta o davanti alle commissioni di certificazione.', en: 'Not needed for domestic work or for resignations signed in a protected venue or before a certification commission (art. 26(7)).' }],
   };
 }
 

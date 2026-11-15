@@ -1,0 +1,9 @@
+01 / → /it/
+02 menu ☰ ouvert (rubriques dépliées)
+03 /it/autocertificazione-carichi-pendenti/
+04 /it/autocertificazione-nascita/
+05 /it/autocertificazione-reddito/
+06 /it/autocertificazione-residenza/
+07 /it/autocertificazione-stato-civile/
+08 /it/autocertificazione-stato-di-famiglia/
+09 /it/autocertificazione-titolo-di-studio/

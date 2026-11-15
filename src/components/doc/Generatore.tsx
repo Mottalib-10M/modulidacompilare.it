@@ -114,11 +114,26 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
     return () => o.disconnect();
   }, []);
   const iniziato = Object.keys(toccati).some((k) => !k.endsWith('.data_firma'));
-  const mostraBarra = iniziato && inVista.radice && !inVista.pulsanti;
+  // 3e tour : la barre n'apparaissait qu'après la première saisie, personne ne la voyait ; elle est là dès l'arrivée sur l'outil.
+  const mostraBarra = inVista.radice && !inVista.pulsanti;
+  // Aperçu vide replié (3e tour : un écran de « ____ » et de juridique avant le bouton) ; il s'ouvre en entier dès la première saisie.
+  const [apertaAnteprima, setApertaAnteprima] = useState(false);
+  const ridotta = !iniziato && !apertaAnteprima;
+  const vaiAlPdf = () => pulsanti.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  const prima = (cls: string) => doc.prima && doc.prima.length > 0 && (
+    <div className={`rounded-md border-l-4 border-amber-500 bg-amber-50 px-3 py-1.5 text-sm leading-snug text-navy-900 ${cls}`}>
+      {doc.prima.map((p, i) => <p key={i}>{i === 0 && <strong>{T(lang, 'Prima di compilare: ', 'Before you start: ')}</strong>}{p[lang]}</p>)}
+    </div>
+  );
   const composto = useMemo(() => doc.componi(v), [doc, v]);
   const visibili = campiVisibili(doc, v);
   const primaData = visibili.find((c) => c.tipo === 'data' && c.id !== 'data_firma')?.id;
   const testo = composto.righe.map((r) => r.t).join('\n');
+  // Phrase rassurante juste au-dessus du texte légal, seulement pour les formules que le document contient vraiment.
+  const rassicura = [
+    /sanzioni penali/.test(testo) && T(lang, '«Sanzioni penali», «falsità in atti», «dichiarazioni mendaci»: riguardano solo chi scrive il falso.', '«Sanzioni penali», «falsità in atti», «dichiarazioni mendaci» (penalties, false statements): they only concern people who write something false.'),
+    /Regolamento UE 2016\/679/.test(testo) && T(lang, '«Regolamento UE 2016/679» è la legge sulla privacy: l’ufficio usa i tuoi dati solo per questa pratica.', '«Regolamento UE 2016/679» is the privacy law (GDPR): the office uses your data only for this procedure.'),
+  ].filter(Boolean) as string[];
   const piede = 'Compilato con modulidacompilare.it, sito indipendente: modello indicativo, non è consulenza legale.';
   const scarica = () => {
     if (bloccato('pdf')) return;
@@ -177,30 +192,39 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
     );
   };
 
-  const gruppi = [
-    { l: T(lang, 'Autocertificazioni', 'Self-certifications'), ids: ['residenza', 'famiglia', 'nascita', 'civile', 'studio', 'reddito', 'penale', 'notorieta'] },
-    { l: T(lang, 'Deleghe', 'Delegations'), ids: ['delega', 'ritiro'] },
-    { l: T(lang, 'Lettere e altri', 'Letters and other'), ids: ['affitto', 'servizio', 'dimissioni', 'testamento'] },
-  ];
+  const ordine = ['residenza', 'famiglia', 'nascita', 'civile', 'studio', 'reddito', 'penale', 'notorieta', 'delega', 'ritiro', 'affitto', 'servizio', 'dimissioni', 'testamento'];
   return (
-    <div ref={radice} className="rechner grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      <div className="text-sm font-medium text-navy-700 lg:col-span-2">{doc.pdf ? T(lang, '1. Compila i campi · 2. Controlla l’anteprima · 3. Scarica il PDF, in fondo al modulo', '1. Fill in the fields · 2. Check the preview · 3. Download the PDF, at the end of the form') : T(lang, '1. Compila i campi · 2. Ricopia a mano il testo che compare', '1. Fill in the fields · 2. Copy out by hand the text that appears')}</div>
+    <div ref={radice} className="rechner grid gap-4 lg:gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <div className="text-sm font-medium text-navy-700 lg:col-span-2">{doc.pdf ? T(lang, '1. Compila i campi · 2. Controlla l’anteprima · 3. Scarica il PDF', '1. Fill in the fields · 2. Check the preview · 3. Download the PDF') : T(lang, '1. Compila i campi · 2. Ricopia a mano il testo che compare', '1. Fill in the fields · 2. Copy out by hand the text that appears')}{' '}<button type="button" onClick={vaiAlPdf} className="whitespace-nowrap font-semibold text-accent-800 underline lg:hidden">{doc.pdf ? T(lang, 'Vai al PDF ↓', 'Go to the PDF ↓') : T(lang, 'Vai al testo ↓', 'Go to the text ↓')}</button></div>
+      {/* 3e tour : « Se hai una condanna, non usare questo testo », « Per l'ISEE questo foglio non basta »… arrivaient sous le bouton « Scarica il PDF ». */}
+
+      {/* 3e tour : « Se hai una condanna, non usare questo testo », « Per l'ISEE questo foglio non basta »… arrivaient sous le bouton « Scarica il PDF ». */}
       <div role="group" className="grid content-start gap-4" aria-label={doc.nome[lang]}>
+        {prima('lg:hidden')}
         {/* 2e tour : « Nessun dato lascia il tuo dispositivo » n'arrivait qu'après le bouton, une fois le codice fiscale tapé. */}
         <p className="rounded-md border-l-4 border-green-700 bg-green-50 px-3 py-1.5 text-sm text-navy-900"><span className="lg:hidden">{T(lang, 'Gratis e senza account. Quello che scrivi resta sul tuo telefono o computer: non viene inviato a nessuno e sparisce quando chiudi la pagina.', 'Free, no account. What you type stays on your phone or computer: it is sent to no one and disappears when you close the page.')}</span><span className="hidden lg:inline">{T(lang, 'Gratis e senza account: ciò che scrivi resta sul tuo computer.', 'Free, no account: what you type stays on your computer.')}</span></p>
         {scelta && (
-          <SelectField id={`${id}-doc`} label={T(lang, 'Quale documento ti serve? (tocca per cambiare)', 'Which document do you need? (tap to change)')} help={T(lang, 'I campi qui sotto cambiano secondo il documento scelto.', 'The fields below change with the document you choose.')} value={doc.id} onChange={cambiaDoc}
-            options={gruppi.flatMap((g) => g.ids.map((i) => ({ value: i, label: `${g.l}: ${docById(i)!.nome[lang]}` })))} />
+          <SelectField id={`${id}-doc`} label={T(lang, 'Quale documento ti serve? Tocca qui per sceglierne un altro', 'Which document do you need? Tap here to pick another one')} help={T(lang, 'I campi qui sotto cambiano secondo il documento scelto.', 'The fields below change with the document you choose.')} value={doc.id} onChange={cambiaDoc}
+            options={ordine.map((i) => ({ value: i, label: docById(i)!.nome[lang] }))} />
         )}
         {visibili.map(campo)}
       </div>
       <div className="lg:sticky lg:top-20 lg:self-start" data-resultat aria-live="polite">
+        {prima('mb-3 hidden lg:block')}
         <p className="mb-2 text-sm font-medium text-navy-600">{doc.pdf ? T(lang, 'Anteprima: il documento si aggiorna mentre scrivi', 'Preview: the document updates as you type (it stays in Italian)') : T(lang, 'Testo da ricopiare a mano', 'Text to copy out by hand (in Italian)')}</p>
-        <div className="mb-2 text-sm text-navy-800">{T(lang, 'Le frasi sulle sanzioni sono obbligatorie in ogni autocertificazione: riguardano solo chi scrive il falso.', 'The sentences on penalties are compulsory in every self-certification: they only concern false statements.')}</div>
+        {rassicura.length > 0 && (
+          <div className="mb-2 rounded-md border-l-4 border-green-700 bg-green-50 px-3 py-2 text-[0.95rem] text-navy-900">
+            <p className="font-semibold">{T(lang, 'Il testo qui sotto è quello che chiede la legge: lo scrive il sito per te, uguale in ogni autocertificazione.', 'The text below is the wording the law requires: the site writes it for you, the same in every self-certification.')}</p>
+            {rassicura.map((t, i) => <p key={i}>{t}</p>)}
+          </div>
+        )}
         <div lang="it" className="rounded-lg border border-navy-200 bg-white p-4 font-serif text-[0.9rem] leading-relaxed text-navy-900 shadow-sm sm:p-6">
-          {composto.righe.map((r, i) => (
+          {(ridotta ? composto.righe.slice(0, 3) : composto.righe).map((r, i) => (
             <p key={i} style={{ marginTop: r.gap ? Math.min(r.gap, 18) : 0 }} className={`${r.b ? 'font-bold' : ''} ${r.c ? 'text-center' : r.r ? 'text-right' : ''} ${r.s && r.s < 10 ? 'text-[0.8rem] text-navy-700' : ''} ${r.s && r.s > 12 ? 'text-base' : ''}`}>{r.t}</p>
           ))}
+          {ridotta && (
+            <button type="button" onClick={() => setApertaAnteprima(true)} className="mt-3 font-sans text-sm font-semibold text-accent-800 underline">{T(lang, 'Il resto del documento si riempie mentre scrivi. Vedi tutto il testo ↓', 'The rest of the document fills in as you type. See the whole text ↓')}</button>
+          )}
         </div>
         {composto.avvisi.length > 0 && (
           <ul className="mt-3 space-y-1.5 text-sm">
@@ -224,7 +248,7 @@ export default function Generatore({ lang, id, doc: docIniziale = 'residenza', s
         </ul>
         {mostraBarra && (
           <div className="fixed inset-x-0 bottom-0 z-30 border-t border-navy-200 bg-white/95 px-4 py-2 shadow-[0_-2px_8px_rgba(0,0,0,0.08)] lg:hidden">
-            <button type="button" onClick={() => pulsanti.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })} className="w-full rounded-lg bg-accent-700 px-5 py-3 text-sm font-semibold text-white">{doc.pdf ? T(lang, 'Vai al PDF: anteprima e download ↓', 'Go to the PDF: preview and download ↓') : T(lang, 'Vai al testo da ricopiare ↓', 'Go to the text to copy ↓')}</button>
+            <button type="button" onClick={vaiAlPdf} className="w-full rounded-lg bg-accent-700 px-5 py-3 text-sm font-semibold text-white">{doc.pdf ? T(lang, 'Vai al PDF: anteprima e download ↓', 'Go to the PDF: preview and download ↓') : T(lang, 'Vai al testo da ricopiare ↓', 'Go to the text to copy ↓')}</button>
           </div>
         )}
         <p className="mt-3 text-xs text-navy-600">{T(lang, 'Modello indicativo scritto sul testo di legge, non è consulenza legale. Nessun dato lascia il tuo dispositivo: il PDF si crea qui, sul tuo telefono o computer.', 'Indicative template written from the law, not legal advice. No data leaves your device: the PDF is made right here, on your phone or computer.')}{methodHref && <> <a href={methodHref} className="underline">{T(lang, 'Metodo e fonti', 'Method and sources')}</a></>}</p>
